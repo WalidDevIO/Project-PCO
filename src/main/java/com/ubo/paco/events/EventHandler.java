@@ -2,11 +2,12 @@ package com.ubo.paco.events;
 
 import java.util.Map;
 import java.util.Set;
+import java.util.HashMap;
 import java.util.HashSet;
 
 public class EventHandler {
 
-    Map<Class<? extends AbstractEvent>, Set<Object>> registry;
+    Map<Class<? extends AbstractEvent>, Set<Object>> registry = new HashMap<>();
 
     public void send(AbstractEvent event) {
         Set<Object> listeners = registry.get(event.getClass());
