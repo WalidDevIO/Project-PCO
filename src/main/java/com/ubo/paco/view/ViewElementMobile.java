@@ -3,6 +3,7 @@ package com.ubo.paco.view;
 import com.ubo.paco.events.MoveEvent;
 import com.ubo.paco.model.ElementMobile;
 import nicellipse.component.NiRectangle;
+import com.ubo.paco.events.SyncEvent;
 
 import java.awt.*;
 
@@ -25,5 +26,9 @@ public class ViewElementMobile extends NiRectangle {
 
     public void setModel(ElementMobile model) {
         this.model = model;
+    }
+
+    public void onSync(SyncEvent event) {
+        // Implémentation de la gestion de la synchronisation
     }
 }

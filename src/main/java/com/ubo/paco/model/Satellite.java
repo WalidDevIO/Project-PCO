@@ -1,10 +1,10 @@
 package com.ubo.paco.model;
 
-import com.ubo.paco.events.SyncEvent;
+import com.ubo.paco.events.AskSyncEvent;
 
 public class Satellite extends ElementMobile {
 
-    public void onSync(SyncEvent event) {
+    public void onSyncAsked(AskSyncEvent event) {
         // Implémentation de la synchronisation avec la balise
     }
 
