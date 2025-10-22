@@ -38,5 +38,11 @@ public class ElementMobile {
         return this.gpsLoc;
     }
 
+    public Boolean getInSync() {
+        return inSync;
+    }
 
+    public void setInSync(Boolean inSync) {
+        this.inSync = inSync;
+    }
 }
