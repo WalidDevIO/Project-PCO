@@ -1,7 +1,6 @@
 package com.ubo.paco.events;
 
-import com.ubo.paco.model.Balise;
-import com.ubo.paco.model.Satellite;
+import com.ubo.paco.view.ViewElementMobile;
 
 public class SyncEvent extends AbstractEvent {
 
@@ -11,10 +10,7 @@ public class SyncEvent extends AbstractEvent {
 
     @Override
     public void sendTo(Object target) {
-        ((Satellite)target).onSync(this);
+        ((ViewElementMobile)target).onSync(this);
     }
-
-    public Balise getBalise() {
-        return (Balise) getSource();
-    }
+    
 }

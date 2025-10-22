@@ -5,10 +5,14 @@ import com.ubo.paco.deplacement.Deplacement;
 import java.awt.*;
 
 public class ElementMobile {
-    Deplacement depl;
-    Point gpsLoc;
+    private Deplacement depl;
+    private Point gpsLoc;
+    private Boolean inSync=false;
 
-    
+    public ElementMobile(Deplacement deplacement, Point point){
+        this.depl=deplacement;
+        this.gpsLoc=point;
+    }
 
     public void bouge () {
         this.depl.bouge(this);
@@ -32,5 +36,13 @@ public class ElementMobile {
 
     public Point getGpsLoc() {
         return this.gpsLoc;
+    }
+
+    public Boolean getInSync() {
+        return inSync;
+    }
+
+    public void setInSync(Boolean inSync) {
+        this.inSync = inSync;
     }
 }
