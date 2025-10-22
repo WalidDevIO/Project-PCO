@@ -1,6 +1,6 @@
 package com.ubo.paco.events;
 
-import com.ubo.paco.events.AbstractEvent;
+import com.ubo.paco.view.ViewElementMobile;
 import java.awt.Point;
 
 public class MoveEvent extends AbstractEvent {

@@ -1,6 +1,7 @@
 package com.ubo.paco.events;
 
-import com.ubo.paco.events.AbstractEvent;
+import com.ubo.paco.model.Balise;
+import com.ubo.paco.model.Satellite;
 
 public class SyncEvent extends AbstractEvent {
 
