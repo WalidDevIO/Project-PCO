@@ -21,6 +21,14 @@ public class DeplacementSinusoide extends Deplacement {
 
     @Override
     public void bouge(ElementMobile elementMobile) {
+        int x = elementMobile.getGpsLoc().x;
+        x = x + this.speed;
+        if(x > conf.getWinWidth()) x = 0;
+        elementMobile.setX(x);
 
+        int abscisse = elementMobile.getGpsLoc().x - xOffset;
+        int ordonnee = (int) Math.cos(abscisse) * conf.getSeaLevel() / 3 + yOffset;
+
+        elementMobile.setY(ordonnee);
     }
 }
