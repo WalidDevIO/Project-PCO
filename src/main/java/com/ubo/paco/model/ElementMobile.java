@@ -1,13 +1,16 @@
 package com.ubo.paco.model;
 
 import com.ubo.paco.deplacement.Deplacement;
+import com.ubo.paco.events.EventHandler;
+import com.ubo.paco.events.SyncEvent;
 
 import java.awt.*;
 
 public class ElementMobile {
     private Deplacement depl;
     private Point gpsLoc;
-    private Boolean inSync=false;
+    private Boolean inSync = false;
+    private final EventHandler eventHandler = new EventHandler();
 
     public ElementMobile(Deplacement deplacement, Point point){
         this.depl=deplacement;
@@ -44,5 +47,15 @@ public class ElementMobile {
 
     public void setInSync(Boolean inSync) {
         this.inSync = inSync;
+    }
+
+    public EventHandler getEventHandler() {
+        return eventHandler;
+    }
+
+    public void sync() {
+        this.inSync = true;
+        getEventHandler().send(new SyncEvent(this));
+        //Attendre un peu, isSync a false et fire event EndSync pour notifier la vue
     }
 }

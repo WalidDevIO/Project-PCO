@@ -4,7 +4,7 @@ import com.ubo.paco.deplacement.Deplacement;
 
 import java.awt.*;
 
-public class Balise extends ElementMobile {
+public class Balise extends ElementMobile implements Runnable {
 
     private int data=0;
 
@@ -18,5 +18,17 @@ public class Balise extends ElementMobile {
 
     private void incr(){
         this.data++;
+    }
+
+    @Override
+    public void run() {
+        while (true){
+            incr();
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

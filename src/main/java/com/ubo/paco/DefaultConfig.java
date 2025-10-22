@@ -20,4 +20,9 @@ public class DefaultConfig extends Config {
     public int getMaxData() {
         return 15;
     }
+
+    @Override
+    public int getSyncWindowSize() {
+        return 50;
+    }
 }
