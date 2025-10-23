@@ -1,18 +1,15 @@
 package com.ubo.paco.model;
 
 import com.ubo.paco.deplacement.Deplacement;
-import com.ubo.paco.deplacement.DeplacementHorizontal;
 import com.ubo.paco.events.AskSyncEvent;
 import com.ubo.paco.Config;
 
 import java.awt.*;
-import java.util.Random;
 
 public class Satellite extends ElementMobile {
 
     public Satellite(Deplacement deplacement, Point point) {
         super(deplacement, point);
-        setDeplacement(new DeplacementHorizontal(new Random().nextInt() % 5 + 1));
     }
 
     public void onSyncAsked(AskSyncEvent event) {

@@ -20,13 +20,18 @@ public class DeplacementSinusoide extends Deplacement {
 
     @Override
     public void bouge(ElementMobile elementMobile) {
-        int x = elementMobile.getGpsLoc().x;
-        x = x + this.speed;
-        if(x > Config.getConfig().getWinWidth()) x = 0;
+        // move horizontally
+        int x = elementMobile.getGpsLoc().x + this.speed;
+        int width = Config.getConfig().getWinWidth();
+        if (x > width) x -= width; // wrap-around
         elementMobile.setX(x);
 
-        int abscisse = elementMobile.getGpsLoc().x - xOffset;
-        int ordonnee = (int) Math.cos(abscisse) * Config.getConfig().getSeaLevel() / 3 + yOffset;
+        // compute a real sine wave for the y coordinate
+        double abscisse = x - xOffset; // distance in pixels from the movement origin
+        double wavelength = 200.0; // pixels per full sine cycle — adjust to taste
+        double angularFreq = 2.0 * Math.PI / wavelength;
+        double amplitude = Config.getConfig().getSeaLevel() / 3.0; // amplitude in pixels
+        int ordonnee = yOffset + (int) Math.round(Math.sin(abscisse * angularFreq) * amplitude);
 
         elementMobile.setY(ordonnee);
     }

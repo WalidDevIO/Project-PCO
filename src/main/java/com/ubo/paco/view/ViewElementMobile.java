@@ -12,8 +12,9 @@ public class ViewElementMobile extends NiRectangle {
     ElementMobile model;
 
 
-    public ViewElementMobile() {
+    public ViewElementMobile(Color color) {
         this.setDimension(new Dimension(20,20));
+        this.setBackground(color);
     }
 
     public void onMove(MoveEvent event) {
@@ -29,10 +30,10 @@ public class ViewElementMobile extends NiRectangle {
     }
 
     public void onSyncStart(StartSyncEvent event) {
-        // Afficher ondes de synchronisation
+        // TODO: Afficher ondes de synchronisation
     }
 
     public void onSyncEnd(EndSyncEvent event) {
-        // Supprimer ondes de synchronisation
+        // TODO: Supprimer ondes de synchronisation
     }
 }

@@ -18,7 +18,7 @@ public class DefaultConfig extends Config {
 
     @Override
     public int getMaxData() {
-        return 15;
+        return 30;
     }
 
     @Override
@@ -33,7 +33,7 @@ public class DefaultConfig extends Config {
 
     @Override
     public int getMovementIntervalMs() {
-        return 100;
+        return 50;
     }
 
     @Override

@@ -1,12 +1,15 @@
 package com.ubo.paco.model;
 
+import com.ubo.paco.Config;
 import com.ubo.paco.deplacement.Deplacement;
+import com.ubo.paco.events.EndSyncEvent;
 import com.ubo.paco.events.EventHandler;
-import com.ubo.paco.events.SyncEvent;
+import com.ubo.paco.events.MoveEvent;
+import com.ubo.paco.events.StartSyncEvent;
 
 import java.awt.*;
 
-public class ElementMobile {
+public class ElementMobile implements Runnable {
     private Deplacement depl;
     private Point gpsLoc;
     private Boolean inSync = false;
@@ -23,6 +26,10 @@ public class ElementMobile {
 
     public void setDeplacement(Deplacement depl) {
         this.depl = depl;
+    }
+
+    public boolean isDeplacementDone() {
+        return this.depl.isDone();
     }
 
     public void setGpsLoc(Point position) {
@@ -55,7 +62,31 @@ public class ElementMobile {
 
     public void sync() {
         this.inSync = true;
-        getEventHandler().send(new SyncEvent(this));
-        //Attendre un peu, isSync a false et fire event EndSync pour notifier la vue
+        getEventHandler().send(new StartSyncEvent(this));
+        try {
+            Thread.sleep(Config.getConfig().getSyncDurationMs());
+        } catch (InterruptedException e) {
+            //Do nothing
+        }
+
+        this.inSync = false;
+        getEventHandler().send(new EndSyncEvent(this));
+    }
+
+    @Override
+    public void run() {
+        while (true) {
+            makeFrame();
+        }
+    }
+
+    protected void makeFrame() {
+        this.bouge();
+        eventHandler.send(new MoveEvent(this, this.gpsLoc));
+        try {
+            Thread.sleep(Config.getConfig().getMovementIntervalMs());
+        } catch (InterruptedException e) {
+            //Do nothing
+        }
     }
 }
