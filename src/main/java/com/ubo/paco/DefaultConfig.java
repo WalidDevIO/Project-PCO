@@ -25,4 +25,19 @@ public class DefaultConfig extends Config {
     public int getSyncWindowSize() {
         return 50;
     }
+
+    @Override
+    public int getSyncDurationMs() {
+        return 2000;
+    }
+
+    @Override
+    public int getMovementIntervalMs() {
+        return 100;
+    }
+
+    @Override
+    public int getDataCollectionFrequency() {
+        return 10;
+    }
 }
