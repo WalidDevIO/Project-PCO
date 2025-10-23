@@ -1,16 +1,18 @@
 package com.ubo.paco.model;
 
 import com.ubo.paco.deplacement.Deplacement;
+import com.ubo.paco.deplacement.DeplacementHorizontal;
 import com.ubo.paco.events.AskSyncEvent;
+import com.ubo.paco.Config;
 
 import java.awt.*;
+import java.util.Random;
 
 public class Satellite extends ElementMobile {
 
-    private static int syncWindowSize = 50; //TODO: Remove
-
     public Satellite(Deplacement deplacement, Point point) {
         super(deplacement, point);
+        setDeplacement(new DeplacementHorizontal(new Random().nextInt() % 5 + 1));
     }
 
     public void onSyncAsked(AskSyncEvent event) {
@@ -21,7 +23,7 @@ public class Satellite extends ElementMobile {
 
         int satelliteX = this.getGpsLoc().x;
         int baliseX = balise.getGpsLoc().x;
-        if (Math.abs(satelliteX - baliseX) <= syncWindowSize) {
+        if (Math.abs(satelliteX - baliseX) <= Config.getConfig().getSyncWindowSize()) {
             this.sync();
             balise.sync();
         }
