@@ -13,10 +13,16 @@ import com.ubo.paco.events.EndSyncEvent;
 import com.ubo.paco.events.EventHandler;
 import com.ubo.paco.events.MoveEvent;
 import com.ubo.paco.events.StartSyncEvent;
+import com.ubo.paco.graphicsElement.NiBalise;
+import com.ubo.paco.graphicsElement.NiSatellite;
+import com.ubo.paco.graphicsElement.NiSync;
+import com.ubo.paco.graphicsElement.PositionStrategy.CenterPositionStrategy;
 import com.ubo.paco.model.Balise;
 import com.ubo.paco.model.Satellite;
 import com.ubo.paco.view.ViewElementMobile;
 
+import nicellipse.component.NiEllipse;
+import nicellipse.component.NiRectangle;
 import nicellipse.component.NiSpace;
 
 /**
@@ -40,13 +46,13 @@ public class App {
     void generateBalise(){
         Point randomPoint = new Point(
                 0,
-                random(config.getSeaLevel(), config.getWinHeight())
+                random(config.getSeaLevel() + 50, config.getWinHeight())
         );
         Balise balise = new Balise(
-                new DeplacementHorizontal(random(0, 5)),
+                new DeplacementHorizontal(random(1, 5)),
                 randomPoint
         );
-        ViewElementMobile view = new ViewElementMobile(Color.YELLOW);
+        ViewElementMobile<NiBalise, NiSync> view = new ViewElementMobile<>(new NiBalise(), new NiSync(), new CenterPositionStrategy<>(), balise);
         EventHandler eventHandler = balise.getEventHandler();
         eventHandler.registerListener(MoveEvent.class, view);
         eventHandler.registerListener(StartSyncEvent.class, view);
@@ -61,14 +67,14 @@ public class App {
     void generateSatellite(){
         Point randomPoint = new Point(
                 0,
-                random(0, config.getSeaLevel())
+                random(0, config.getSeaLevel() - 50)
         );
         Satellite satellite = new Satellite(
                 new DeplacementHorizontal(random(1, 5)),
                 randomPoint
         );
         satellitesPool.add(satellite);
-        ViewElementMobile view = new ViewElementMobile(Color.BLUE);
+        ViewElementMobile<NiSatellite, NiSync> view = new ViewElementMobile<>(new NiSatellite(), new NiSync(), new CenterPositionStrategy<>(), satellite);
         EventHandler eventHandler = satellite.getEventHandler();
         eventHandler.registerListener(MoveEvent.class, view);
         eventHandler.registerListener(StartSyncEvent.class, view);
@@ -85,12 +91,21 @@ public class App {
 
         space.openInWindow();
 
+
         for(int i = 0; i < 5; i++){
             generateSatellite();
         }
         for(int i = 0; i < 6; i++){
             generateBalise();
         }
+
+
+        NiRectangle sea = new NiRectangle();
+        sea.setBackground(new Color(0, 105, 148));
+        sea.setLocation(0, config.getSeaLevel());
+        sea.setSize(config.getWinWidth(), config.getWinHeight() - config.getSeaLevel());
+        space.add(sea);
+        space.repaint();
 
         for(Thread thread : threadPool){
             thread.start();

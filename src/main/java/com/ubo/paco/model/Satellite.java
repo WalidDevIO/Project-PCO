@@ -34,7 +34,7 @@ public class Satellite extends ElementMobile implements Runnable {
 
     @Override
     public void sync() {
-        this.setDeplacement(new DeplacementImmobile(0));
+        this.setDeplacement(new DeplacementHorizontal(1));
         super.sync();
         this.setDeplacement(new DeplacementHorizontal(new Random().nextInt(1, 5)));
     }
