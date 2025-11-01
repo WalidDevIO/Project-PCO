@@ -13,9 +13,7 @@ import com.ubo.paco.events.EndSyncEvent;
 import com.ubo.paco.events.EventHandler;
 import com.ubo.paco.events.MoveEvent;
 import com.ubo.paco.events.StartSyncEvent;
-import com.ubo.paco.graphicsElement.NiBalise;
-import com.ubo.paco.graphicsElement.NiSatellite;
-import com.ubo.paco.graphicsElement.NiSync;
+import com.ubo.paco.graphicsElement.*;
 import com.ubo.paco.graphicsElement.PositionStrategy.CenterPositionStrategy;
 import com.ubo.paco.model.Balise;
 import com.ubo.paco.model.Satellite;
@@ -100,13 +98,14 @@ public class App {
         }
 
 
-        NiRectangle sea = new NiRectangle();
-        sea.setBackground(new Color(0, 105, 148));
-        sea.setLocation(0, config.getSeaLevel());
-        sea.setSize(config.getWinWidth(), config.getWinHeight() - config.getSeaLevel());
+        NiSea sea = new NiSea();
         space.add(sea);
-        space.repaint();
 
+        NiSky sky = new NiSky();
+        space.add(sky);
+
+
+        space.repaint();
         for(Thread thread : threadPool){
             thread.start();
         }
