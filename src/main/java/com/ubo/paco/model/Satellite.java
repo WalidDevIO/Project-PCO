@@ -1,15 +1,12 @@
 package com.ubo.paco.model;
 
-import com.ubo.paco.SyncRunner;
 import com.ubo.paco.deplacement.Deplacement;
 import com.ubo.paco.deplacement.DeplacementHorizontal;
-import com.ubo.paco.deplacement.DeplacementImmobile;
 import com.ubo.paco.events.AskSyncEvent;
-import com.ubo.paco.Config;
+import com.ubo.paco.config.Config;
 
 import java.awt.*;
 import java.util.Random;
-import java.util.concurrent.CompletableFuture;
 
 public class Satellite extends ElementMobile implements Runnable {
 

@@ -30,6 +30,10 @@ public class ViewElementMobile<C extends Component, S extends Component> extends
         this.add(component);
     }
 
+    public ElementMobile getModel() {
+        return model;
+    }
+
     public C getComponent() {
         return component;
     }

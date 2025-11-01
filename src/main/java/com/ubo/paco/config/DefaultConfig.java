@@ -1,4 +1,4 @@
-package com.ubo.paco;
+package com.ubo.paco.config;
 
 public class DefaultConfig extends Config {
     @Override

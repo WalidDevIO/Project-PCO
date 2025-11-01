@@ -1,6 +1,6 @@
 package com.ubo.paco.graphicsElement;
 
-import com.ubo.paco.Config;
+import com.ubo.paco.config.Config;
 import nicellipse.component.NiRectangle;
 
 

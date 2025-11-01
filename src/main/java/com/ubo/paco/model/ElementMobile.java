@@ -1,7 +1,7 @@
 package com.ubo.paco.model;
 
-import com.ubo.paco.Config;
-import com.ubo.paco.SyncRunner;
+import com.ubo.paco.config.Config;
+import com.ubo.paco.ThreadRunner.SyncRunner;
 import com.ubo.paco.deplacement.Deplacement;
 import com.ubo.paco.events.EndSyncEvent;
 import com.ubo.paco.events.EventHandler;

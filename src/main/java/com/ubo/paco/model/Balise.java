@@ -7,7 +7,7 @@ import com.ubo.paco.deplacement.DeplacementImmobile;
 import com.ubo.paco.deplacement.DeplacementRemontee;
 import com.ubo.paco.deplacement.DeplacementSinusoide;
 import com.ubo.paco.events.AskSyncEvent;
-import com.ubo.paco.Config;
+import com.ubo.paco.config.Config;
 
 import java.awt.*;
 import java.util.Random;
