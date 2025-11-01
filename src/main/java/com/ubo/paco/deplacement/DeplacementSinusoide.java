@@ -33,6 +33,9 @@ public class DeplacementSinusoide extends Deplacement {
         double amplitude = config.getSeaLevel() / 3.0; // amplitude in pixels
         int ordonnee = yOffset + (int) Math.round(Math.sin(abscisse * angularFreq) * amplitude);
 
+        // clamp Y to stay under sea level
+        ordonnee = Math.max(ordonnee, config.getSeaLevel()+50);
+
         elementMobile.setY(ordonnee);
     }
 }

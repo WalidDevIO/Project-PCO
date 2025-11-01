@@ -101,7 +101,7 @@ public class Simulation {
     }
 
     int random(int min, int max){
-        return new Random().nextInt(min, max);
+        return new Random().nextInt(min, max+1);
     }
 
     public void generateDecors() {
