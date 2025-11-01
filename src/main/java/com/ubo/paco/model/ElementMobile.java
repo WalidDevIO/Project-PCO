@@ -1,6 +1,7 @@
 package com.ubo.paco.model;
 
 import com.ubo.paco.Config;
+import com.ubo.paco.SyncRunner;
 import com.ubo.paco.deplacement.Deplacement;
 import com.ubo.paco.events.EndSyncEvent;
 import com.ubo.paco.events.EventHandler;
@@ -8,13 +9,15 @@ import com.ubo.paco.events.MoveEvent;
 import com.ubo.paco.events.StartSyncEvent;
 
 import java.awt.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ElementMobile implements Runnable {
     private Deplacement depl;
     private Point gpsLoc;
-    private Boolean inSync = false;
+    private AtomicBoolean inSync = new AtomicBoolean(false);
     private final EventHandler eventHandler = new EventHandler();
     protected Config config;
+    protected SyncRunner runner = new SyncRunner(2);
 
     public ElementMobile(Deplacement deplacement, Point point, Config config) {
         this.config = config;
@@ -51,11 +54,15 @@ public class ElementMobile implements Runnable {
     }
 
     public Boolean getInSync() {
-        return inSync;
+        return inSync.get();
     }
 
     public void setInSync(Boolean inSync) {
-        this.inSync = inSync;
+        this.inSync.set(inSync);
+    }
+
+    public boolean tryStartSync() {
+        return inSync.compareAndSet(false, true);
     }
 
     public EventHandler getEventHandler() {
@@ -63,7 +70,7 @@ public class ElementMobile implements Runnable {
     }
 
     public void sync() {
-        this.inSync = true;
+        this.setInSync(true);
         getEventHandler().send(new StartSyncEvent(this));
         try {
             Thread.sleep(config.getSyncDurationMs());
@@ -71,7 +78,7 @@ public class ElementMobile implements Runnable {
             //Do nothing
         }
 
-        this.inSync = false;
+        this.setInSync(false);
         getEventHandler().send(new EndSyncEvent(this));
     }
 

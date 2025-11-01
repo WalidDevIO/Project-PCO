@@ -13,7 +13,7 @@ public class DeplacementRemontee extends Deplacement {
     @Override
     public void bouge(ElementMobile elementMobile) {
         int y = elementMobile.getGpsLoc().y;
-        if(y > config.getSeaLevel()) {
+        if(y >= config.getSeaLevel()) {
             elementMobile.setY(y - this.speed);
         } else done = true;
     }

@@ -1,5 +1,6 @@
 package com.ubo.paco.model;
 
+import com.ubo.paco.SyncRunner;
 import com.ubo.paco.deplacement.Deplacement;
 import com.ubo.paco.deplacement.DeplacementHorizontal;
 import com.ubo.paco.deplacement.DeplacementImmobile;
@@ -25,10 +26,7 @@ public class Satellite extends ElementMobile implements Runnable {
         int satelliteX = this.getGpsLoc().x;
         int baliseX = balise.getGpsLoc().x;
         if (Math.abs(satelliteX - baliseX) <= config.getSyncWindowSize()) {
-            CompletableFuture<Void> f1 = CompletableFuture.runAsync(this::sync);
-            CompletableFuture<Void> f2 = CompletableFuture.runAsync(balise::sync);
-
-            CompletableFuture.allOf(f1, f2).join();
+            runner.runTwoSyncs(this, balise);
         }
     }
 
