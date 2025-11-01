@@ -17,8 +17,8 @@ public class Balise extends ElementMobile {
     private int data=0;
     private int runnerCount=0;
 
-    public Balise(Deplacement deplacement, Point point) {
-        super(deplacement, point);
+    public Balise(Deplacement deplacement, Point point, Config config) {
+        super(deplacement, point, config);
     }
 
     public int getData() {
@@ -34,21 +34,21 @@ public class Balise extends ElementMobile {
         int choice = rand.nextInt(0,2);
         Deplacement depl;
         switch (choice) {
-            case 0 -> depl = new DeplacementHorizontal(4);
-            default -> depl = new DeplacementSinusoide(4, this.getGpsLoc().x, this.getGpsLoc().y);
+            case 0 -> depl = new DeplacementHorizontal(4, config);
+            default -> depl = new DeplacementSinusoide(4, this.getGpsLoc().x, this.getGpsLoc().y, config);
         }
         System.out.println("Chosen movement strategy: " + depl.getClass().getSimpleName());
         return depl;
     }
 
     private boolean haveToCollectData() {
-        return this.data < Config.getConfig().getMaxData();
+        return this.data < config.getMaxData();
     }
 
     @Override
     public void sync() {
         super.sync();
-        setDeplacement(new DeplacementDescente(4, new Random().nextInt(Config.getConfig().getSeaLevel(), Config.getConfig().getWinHeight()))); //Define random movement after sync
+        setDeplacement(new DeplacementDescente(4, new Random().nextInt(config.getSeaLevel(), config.getWinHeight()), config)); //Define random movement after sync
         data=0;
     }
 
@@ -57,10 +57,10 @@ public class Balise extends ElementMobile {
         while (true){
             // Collecte de données aléatoirement
             this.runnerCount++;
-            if(this.runnerCount%Config.getConfig().getDataCollectionFrequency()==0 && haveToCollectData()) incr();
+            if(this.runnerCount%config.getDataCollectionFrequency()==0 && haveToCollectData()) incr();
 
             if(!haveToCollectData() && !isDeplacementDone()){
-                setDeplacement(new DeplacementRemontee(4));
+                setDeplacement(new DeplacementRemontee(4, config));
             }
 
             // Déplacement terminé on passe en mode immobile et on demande une synchronisation
@@ -70,7 +70,7 @@ public class Balise extends ElementMobile {
                     setDeplacement(getRandomDeplacementStrategy());
                 } else {
                     //On est remonté en surface, on attend la synchronisation
-                    setDeplacement(new DeplacementImmobile(0));
+                    setDeplacement(new DeplacementImmobile(0, config));
                     getEventHandler().send(new AskSyncEvent(this));
                 }
             }

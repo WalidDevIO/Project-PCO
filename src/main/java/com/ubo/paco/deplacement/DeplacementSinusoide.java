@@ -12,8 +12,8 @@ public class DeplacementSinusoide extends Deplacement {
      * @param xOffset position x de la balise au depart de ce deplacement
      * @param yOffset position y de la balise au depart de ce deplacement
      */
-    public DeplacementSinusoide(int speed, int xOffset, int yOffset) {
-        super(speed);
+    public DeplacementSinusoide(int speed, int xOffset, int yOffset, Config config) {
+        super(speed, config);
         this.xOffset = xOffset;
         this.yOffset = yOffset;
     }
@@ -22,7 +22,7 @@ public class DeplacementSinusoide extends Deplacement {
     public void bouge(ElementMobile elementMobile) {
         // move horizontally
         int x = elementMobile.getGpsLoc().x + this.speed;
-        int width = Config.getConfig().getWinWidth();
+        int width = config.getWinWidth();
         if (x > width) x -= width; // wrap-around
         elementMobile.setX(x);
 
@@ -30,7 +30,7 @@ public class DeplacementSinusoide extends Deplacement {
         double abscisse = x - xOffset; // distance in pixels from the movement origin
         double wavelength = 200.0; // pixels per full sine cycle — adjust to taste
         double angularFreq = 2.0 * Math.PI / wavelength;
-        double amplitude = Config.getConfig().getSeaLevel() / 3.0; // amplitude in pixels
+        double amplitude = config.getSeaLevel() / 3.0; // amplitude in pixels
         int ordonnee = yOffset + (int) Math.round(Math.sin(abscisse * angularFreq) * amplitude);
 
         elementMobile.setY(ordonnee);

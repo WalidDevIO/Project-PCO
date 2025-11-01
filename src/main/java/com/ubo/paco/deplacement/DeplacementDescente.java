@@ -1,13 +1,14 @@
 package com.ubo.paco.deplacement;
 
+import com.ubo.paco.Config;
 import com.ubo.paco.model.ElementMobile;
 
 public class DeplacementDescente extends Deplacement {
     private int bottom;
     private boolean done = false;
 
-    public DeplacementDescente(int speed, int bottom) {
-        super(speed);
+    public DeplacementDescente(int speed, int bottom, Config config) {
+        super(speed, config);
         this.bottom = bottom;
     }
 

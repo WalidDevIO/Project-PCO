@@ -14,8 +14,10 @@ public class ElementMobile implements Runnable {
     private Point gpsLoc;
     private Boolean inSync = false;
     private final EventHandler eventHandler = new EventHandler();
+    protected Config config;
 
-    public ElementMobile(Deplacement deplacement, Point point){
+    public ElementMobile(Deplacement deplacement, Point point, Config config) {
+        this.config = config;
         this.depl=deplacement;
         this.gpsLoc=point;
     }
@@ -64,7 +66,7 @@ public class ElementMobile implements Runnable {
         this.inSync = true;
         getEventHandler().send(new StartSyncEvent(this));
         try {
-            Thread.sleep(Config.getConfig().getSyncDurationMs());
+            Thread.sleep(config.getSyncDurationMs());
         } catch (InterruptedException e) {
             //Do nothing
         }
@@ -84,7 +86,7 @@ public class ElementMobile implements Runnable {
         this.bouge();
         eventHandler.send(new MoveEvent(this, this.gpsLoc));
         try {
-            Thread.sleep(Config.getConfig().getMovementIntervalMs());
+            Thread.sleep(config.getMovementIntervalMs());
         } catch (InterruptedException e) {
             //Do nothing
         }

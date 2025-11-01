@@ -4,15 +4,15 @@ import com.ubo.paco.Config;
 import com.ubo.paco.model.ElementMobile;
 
 public class DeplacementHorizontal extends Deplacement {
-    public DeplacementHorizontal(int speed) {
-        super(speed);
+    public DeplacementHorizontal(int speed, Config config) {
+        super(speed, config);
     }
 
     @Override
     public void bouge(ElementMobile elementMobile) {
         int x = elementMobile.getGpsLoc().x;
         x = x + speed;
-        if(x > Config.getConfig().getWinWidth()) x = 0;
+        if(x > config.getWinWidth()) x = 0;
         elementMobile.setX(x);
     }
 }

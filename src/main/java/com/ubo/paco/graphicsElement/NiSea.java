@@ -6,10 +6,12 @@ import nicellipse.component.NiRectangle;
 import java.awt.*;
 
 public class NiSea extends NiRectangle {
-    public NiSea() {
+    protected Config config;
+    public NiSea(Config config) {
         super();
+        this.config = config;
         this.setBackground(new Color(0, 105, 148));
-        this.setLocation(0, Config.getConfig().getSeaLevel());
-        this.setSize(Config.getConfig().getWinWidth(), Config.getConfig().getWinHeight() - Config.getConfig().getSeaLevel());
+        this.setLocation(0, config.getSeaLevel());
+        this.setSize(config.getWinWidth(), config.getWinHeight() - config.getSeaLevel());
     }
 }

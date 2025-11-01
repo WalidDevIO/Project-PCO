@@ -6,14 +6,14 @@ import com.ubo.paco.model.ElementMobile;
 public class DeplacementRemontee extends Deplacement {
     private boolean done = false;
 
-    public DeplacementRemontee(int speed) {
-        super(speed);
+    public DeplacementRemontee(int speed, Config config) {
+        super(speed, config);
     }
 
     @Override
     public void bouge(ElementMobile elementMobile) {
         int y = elementMobile.getGpsLoc().y;
-        if(y > Config.getConfig().getSeaLevel()) {
+        if(y > config.getSeaLevel()) {
             elementMobile.setY(y - this.speed);
         } else done = true;
     }

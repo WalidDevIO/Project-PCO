@@ -12,8 +12,8 @@ import java.util.concurrent.CompletableFuture;
 
 public class Satellite extends ElementMobile implements Runnable {
 
-    public Satellite(Deplacement deplacement, Point point) {
-        super(deplacement, point);
+    public Satellite(Deplacement deplacement, Point point, Config config) {
+        super(deplacement, point, config);
     }
 
     public void onSyncAsked(AskSyncEvent event) {
@@ -24,7 +24,7 @@ public class Satellite extends ElementMobile implements Runnable {
 
         int satelliteX = this.getGpsLoc().x;
         int baliseX = balise.getGpsLoc().x;
-        if (Math.abs(satelliteX - baliseX) <= Config.getConfig().getSyncWindowSize()) {
+        if (Math.abs(satelliteX - baliseX) <= config.getSyncWindowSize()) {
             CompletableFuture<Void> f1 = CompletableFuture.runAsync(this::sync);
             CompletableFuture<Void> f2 = CompletableFuture.runAsync(balise::sync);
 
@@ -34,9 +34,9 @@ public class Satellite extends ElementMobile implements Runnable {
 
     @Override
     public void sync() {
-        this.setDeplacement(new DeplacementHorizontal(1));
+        this.setDeplacement(new DeplacementHorizontal(1, config));
         super.sync();
-        this.setDeplacement(new DeplacementHorizontal(new Random().nextInt(1, 5)));
+        this.setDeplacement(new DeplacementHorizontal(new Random().nextInt(1, 5), config));
     }
 
 }

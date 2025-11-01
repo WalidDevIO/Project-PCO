@@ -28,7 +28,7 @@ import nicellipse.component.NiSpace;
  */
 public class App {
 
-    Config config = Config.getConfig();
+    Config config = new DefaultConfig();
     NiSpace space;
     List<Satellite> satellitesPool = new ArrayList<>();
     List<Thread> threadPool = new ArrayList<>();
@@ -47,8 +47,9 @@ public class App {
                 random(config.getSeaLevel() + 50, config.getWinHeight())
         );
         Balise balise = new Balise(
-                new DeplacementHorizontal(random(1, 5)),
-                randomPoint
+                new DeplacementHorizontal(random(1, 5), config),
+                randomPoint,
+                config
         );
         ViewElementMobile<NiBalise, NiSync> view = new ViewElementMobile<>(new NiBalise(), new NiSync(), new CenterPositionStrategy<>(), balise);
         EventHandler eventHandler = balise.getEventHandler();
@@ -68,8 +69,9 @@ public class App {
                 random(0, config.getSeaLevel() - 50)
         );
         Satellite satellite = new Satellite(
-                new DeplacementHorizontal(random(1, 5)),
-                randomPoint
+                new DeplacementHorizontal(random(1, 5), config),
+                randomPoint,
+                config
         );
         satellitesPool.add(satellite);
         ViewElementMobile<NiSatellite, NiSync> view = new ViewElementMobile<>(new NiSatellite(), new NiSync(), new CenterPositionStrategy<>(), satellite);
@@ -98,10 +100,10 @@ public class App {
         }
 
 
-        NiSea sea = new NiSea();
+        NiSea sea = new NiSea(config);
         space.add(sea);
 
-        NiSky sky = new NiSky();
+        NiSky sky = new NiSky(config);
         space.add(sky);
 
 
