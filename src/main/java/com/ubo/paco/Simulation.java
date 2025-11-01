@@ -7,7 +7,6 @@ import com.ubo.paco.events.*;
 import com.ubo.paco.graphicsElement.*;
 import com.ubo.paco.graphicsElement.PositionStrategy.CenterPositionStrategy;
 import com.ubo.paco.model.Balise;
-import com.ubo.paco.model.ElementMobile;
 import com.ubo.paco.model.Satellite;
 import com.ubo.paco.view.ViewElementMobile;
 import nicellipse.component.NiSpace;
@@ -35,9 +34,9 @@ public class Simulation {
         this.space = space;
     }
 
-    public <C extends Component, S extends Component, M extends Satellite> ViewElementMobile<C, S> addSatellite(C component, S syncComponent, CenterPositionStrategy<C, S> strategyPosition, M satellite) {
+    public ViewElementMobile addSatellite(Component component, Component syncComponent, CenterPositionStrategy strategyPosition, Satellite satellite) {
         satellitesPool.add(satellite);
-        ViewElementMobile<C, S> view = new ViewElementMobile<>(component, syncComponent, strategyPosition, satellite);
+        ViewElementMobile view = new ViewElementMobile(component, syncComponent, strategyPosition, satellite);
         EventHandler eventHandler = satellite.getEventHandler();
         eventHandler.registerListener(MoveEvent.class, view);
         eventHandler.registerListener(StartSyncEvent.class, view);
@@ -47,8 +46,8 @@ public class Simulation {
         return view;
     }
 
-    public <C extends Component, S extends Component, M extends Balise> ViewElementMobile<C, S> addBalise(C component, S syncComponent, CenterPositionStrategy<C, S> strategyPosition, M balise) {
-        ViewElementMobile <C, S> view = new ViewElementMobile<>(component, syncComponent, strategyPosition, balise);
+    public ViewElementMobile addBalise(Component component, Component syncComponent, CenterPositionStrategy strategyPosition, Balise balise) {
+        ViewElementMobile view = new ViewElementMobile(component, syncComponent, strategyPosition, balise);
         EventHandler eventHandler = balise.getEventHandler();
         eventHandler.registerListener(MoveEvent.class, view);
         eventHandler.registerListener(StartSyncEvent.class, view);
@@ -62,15 +61,15 @@ public class Simulation {
     }
 
 
-    public List<ViewElementMobile<NiSatellite, NiSync>> generateSatellites(int count) {
+    public List<ViewElementMobile> generateSatellites(int count) {
 
-        List<ViewElementMobile<NiSatellite, NiSync>> satellites = new ArrayList<>();
+        List<ViewElementMobile> satellites = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             satellites.add(
                 this.addSatellite(
                         new NiSatellite(),
                         new NiSync(),
-                        new CenterPositionStrategy<>(),
+                        new CenterPositionStrategy(),
                         new Satellite(
                                 new DeplacementHorizontal(random(1, 5), config),
                                 new Point(0,random(0, config.getSeaLevel() - 50)),
@@ -82,14 +81,14 @@ public class Simulation {
         return satellites;
     }
 
-    public List<ViewElementMobile<NiBalise, NiSync>> generateBalises(int count) {
-        List<ViewElementMobile<NiBalise, NiSync>> balises = new ArrayList<>();
+    public List<ViewElementMobile> generateBalises(int count) {
+        List<ViewElementMobile> balises = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             balises.add(
                 this.addBalise(
                         new NiBalise(),
                         new NiSync(),
-                        new CenterPositionStrategy<>(),
+                        new CenterPositionStrategy(),
                         new Balise(
                                 new DeplacementHorizontal(random(1, 5), config),
                                 new Point(0, random(config.getSeaLevel() + 50, config.getWinHeight())),

@@ -5,7 +5,6 @@ import nicellipse.component.NiRectangle;
 
 import java.awt.*;
 
-public abstract class PositionStrategy<C extends Component, S extends Component> {
-    abstract public void position(C child, S sync, NiRectangle parent, ElementMobile model);
+public interface PositionStrategy {
+    void position(Component child, Component sync, NiRectangle parent, ElementMobile model);
 }
-

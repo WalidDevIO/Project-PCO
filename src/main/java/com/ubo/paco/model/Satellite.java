@@ -8,7 +8,7 @@ import com.ubo.paco.config.Config;
 import java.awt.*;
 import java.util.Random;
 
-public class Satellite extends ElementMobile implements Runnable {
+public class Satellite extends ElementMobile {
 
     public Satellite(Deplacement deplacement, Point point, Config config) {
         super(deplacement, point, config);

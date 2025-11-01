@@ -5,9 +5,9 @@ import nicellipse.component.NiRectangle;
 
 import java.awt.*;
 
-public class CenterPositionStrategy<C extends Component, S extends Component> extends PositionStrategy<C, S> {
+public class CenterPositionStrategy implements PositionStrategy {
     @Override
-    public void position(C child, S sync, NiRectangle parent, ElementMobile model) {
+    public void position(Component child, Component sync, NiRectangle parent, ElementMobile model) {
         // Taille du parent = max entre enfant et sync
         int width = Math.max(child.getWidth(), sync.getWidth());
         int height = Math.max(child.getHeight(), sync.getHeight());

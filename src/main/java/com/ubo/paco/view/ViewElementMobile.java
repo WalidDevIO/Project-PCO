@@ -9,13 +9,13 @@ import com.ubo.paco.events.StartSyncEvent;
 
 import java.awt.*;
 
-public class ViewElementMobile<C extends Component, S extends Component> extends NiRectangle {
+public class ViewElementMobile extends NiRectangle {
     private ElementMobile model;
-    private C component;
-    private S syncComponent;
-    private PositionStrategy<C,S> strategyPosition;
+    private Component component;
+    private Component syncComponent;
+    private PositionStrategy strategyPosition;
 
-    public ViewElementMobile(C component, S syncComponent, PositionStrategy<C,S> strategyPosition, ElementMobile model) {
+    public ViewElementMobile(Component component, Component syncComponent, PositionStrategy strategyPosition, ElementMobile model) {
         this.model = model;
         this.syncComponent = syncComponent;
         this.component = component;
@@ -34,27 +34,27 @@ public class ViewElementMobile<C extends Component, S extends Component> extends
         return model;
     }
 
-    public C getComponent() {
+    public Component getComponent() {
         return component;
     }
 
-    public void setComponent(C component) {
+    public void setComponent(Component component) {
         this.component = component;
     }
 
-    public S getSyncComponent() {
+    public Component getSyncComponent() {
         return syncComponent;
     }
 
-    public void setSyncComponent(S syncComponent) {
+    public void setSyncComponent(Component syncComponent) {
         this.syncComponent = syncComponent;
     }
 
-    public PositionStrategy<C, S> getStrategyPosition() {
+    public PositionStrategy getStrategyPosition() {
         return strategyPosition;
     }
 
-    public void setStrategyPosition(PositionStrategy<C, S> strategyPosition) {
+    public void setStrategyPosition(PositionStrategy strategyPosition) {
         this.strategyPosition = strategyPosition;
     }
 
