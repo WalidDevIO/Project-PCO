@@ -6,6 +6,8 @@ import com.ubo.paco.deplacement.DeplacementImmobile;
 import com.ubo.paco.deplacement.DeplacementRemontee;
 import com.ubo.paco.events.AskSyncEvent;
 import com.ubo.paco.config.Config;
+import com.ubo.paco.model.baliseprogram.BaliseProgram;
+import com.ubo.paco.model.baliseprogram.DefaultBaliseProgram;
 
 import java.awt.*;
 import java.util.Random;
@@ -15,32 +17,36 @@ public class Balise extends ElementMobile {
     private int data=0;
     private int runnerCount=0;
 
+    private BaliseProgram prog;
+
     public Balise(Deplacement deplacement, Point point, Config config) {
         super(deplacement, point, config);
+        this.prog = new DefaultBaliseProgram(this, config);
     }
 
     public int getData() {
         return data;
     }
 
-    private void incr(){
+    public void incr(){
         this.data++;
     }
 
-    private boolean haveToCollectData() {
+    public boolean haveToCollectData() {
         return this.data < config.getMaxData();
     }
 
     @Override
     public void sync() {
         super.sync();
+        // synchro terminee, on redescend
         setDeplacement(
             new DeplacementDescente(
                 config.getLinearMovementSpeed(),
                 new Random().nextInt(config.getSeaLevel(), config.getWinHeight()),
                 config
             )
-        ); //Define random movement after sync
+        );
         data=0;
     }
 
@@ -51,23 +57,10 @@ public class Balise extends ElementMobile {
             this.runnerCount++;
             if(this.runnerCount%config.getDataCollectionFrequency()==0 && haveToCollectData()) incr();
 
-            if(!haveToCollectData() && !isDeplacementDone()){
-                setDeplacement(new DeplacementRemontee(config.getLinearMovementSpeed(), config));
-            }
+            // tick du cycle de la balise
+            this.prog.tick();
 
-            // Déplacement terminé on passe en mode immobile et on demande une synchronisation
-            if(isDeplacementDone()) {
-                //On est descendu au fond, on veut se déplacer aléatoirement
-                if(haveToCollectData()) {
-                    setDeplacement(config.getBaliseRandomDeplacementStrategy(this.getGpsLoc()));
-                } else {
-                    //On est remonté en surface, on attend la synchronisation
-                    setDeplacement(new DeplacementImmobile(0, config));
-                    getEventHandler().send(new AskSyncEvent(this));
-                }
-            }
-
-            // Bouge
+            // mise a jour vue
             makeFrame();
         }
     }
