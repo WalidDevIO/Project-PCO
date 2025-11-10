@@ -15,6 +15,7 @@ import java.util.Random;
 public class Balise extends ElementMobile {
 
     private int data=0;
+    private int dataCountRequired=0;
     private int runnerCount=0;
 
     private BaliseProgram prog;
@@ -22,6 +23,7 @@ public class Balise extends ElementMobile {
     public Balise(Deplacement deplacement, Point point, Config config) {
         super(deplacement, point, config);
         this.prog = new DefaultBaliseProgram(this, config);
+        this.dataCountRequired = new Random().nextInt(config.getMaxData());
     }
 
     public int getData() {
@@ -33,7 +35,7 @@ public class Balise extends ElementMobile {
     }
 
     public boolean haveToCollectData() {
-        return this.data < config.getMaxData();
+        return this.data < dataCountRequired;
     }
 
     @Override
@@ -48,6 +50,7 @@ public class Balise extends ElementMobile {
             )
         );
         data=0;
+        this.dataCountRequired = new Random().nextInt(config.getMaxData());
     }
 
     @Override
