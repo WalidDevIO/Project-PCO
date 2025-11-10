@@ -35,7 +35,7 @@ dependencies {
 // --- Configuration ANTLR ---
 tasks.generateGrammarSource {
     arguments = arguments + listOf("-visitor")
-    outputDirectory = layout.buildDirectory.dir("generated-src/antlr/main").get().asFile
+    outputDirectory = file("${buildDir}/generated-src/antlr/main/simulation/antlr")
 }
 
 sourceSets {
@@ -44,7 +44,7 @@ sourceSets {
             srcDir("src/main/antlr4")
         }
         java {
-            srcDir(layout.buildDirectory.dir("generated-src/antlr/antlr4"))
+            srcDir("${buildDir}/generated-src/antlr/main/simulation/antlr")
         }
     }
 }
