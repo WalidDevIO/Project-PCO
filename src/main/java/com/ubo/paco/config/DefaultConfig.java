@@ -29,6 +29,11 @@ public class DefaultConfig extends Config {
     }
 
     @Override
+    public int getMinData() {
+        return 10;
+    }
+
+    @Override
     public int getSyncWindowSize() {
         return 50;
     }

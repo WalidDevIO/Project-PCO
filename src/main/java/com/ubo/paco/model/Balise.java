@@ -23,7 +23,7 @@ public class Balise extends ElementMobile {
     public Balise(Deplacement deplacement, Point point, Config config) {
         super(deplacement, point, config);
         this.prog = new DefaultBaliseProgram(this, config);
-        this.dataCountRequired = new Random().nextInt(config.getMaxData());
+        this.dataCountRequired = new Random().nextInt(config.getMinData(), config.getMaxData());
     }
 
     public int getData() {
@@ -50,7 +50,7 @@ public class Balise extends ElementMobile {
             )
         );
         data=0;
-        this.dataCountRequired = new Random().nextInt(config.getMaxData());
+        this.dataCountRequired = new Random().nextInt(config.getMinData(), config.getMaxData());
     }
 
     @Override
