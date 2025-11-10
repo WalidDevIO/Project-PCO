@@ -6,7 +6,6 @@ import com.ubo.paco.events.AskSyncEvent;
 import com.ubo.paco.config.Config;
 
 import java.awt.*;
-import java.util.Random;
 
 public class Satellite extends ElementMobile {
 
@@ -31,7 +30,7 @@ public class Satellite extends ElementMobile {
     public void sync() {
         this.setDeplacement(new DeplacementHorizontal(1, config));
         super.sync();
-        this.setDeplacement(new DeplacementHorizontal(new Random().nextInt(1, 5), config));
+        this.setDeplacement(new DeplacementHorizontal(config.getRandomSpeed(), config));
     }
 
 }
