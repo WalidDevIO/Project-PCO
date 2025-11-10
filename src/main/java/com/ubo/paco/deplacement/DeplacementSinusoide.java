@@ -34,7 +34,7 @@ public class DeplacementSinusoide extends Deplacement {
         int ordonnee = yOffset + (int) Math.round(Math.sin(abscisse * angularFreq) * amplitude);
 
         // clamp Y to stay under sea level
-        ordonnee = Math.max(ordonnee, config.getSeaLevel()+50);
+        ordonnee = Math.max(ordonnee, config.getSeaLevel() + config.getSeaThreshold());
 
         elementMobile.setY(ordonnee);
     }

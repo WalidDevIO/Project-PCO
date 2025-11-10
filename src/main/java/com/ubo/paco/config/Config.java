@@ -16,6 +16,7 @@ public abstract class Config {
     public abstract int getDataCollectionFrequency();
     public abstract int getLinearMovementSpeed();
     public abstract int getRandomSpeed();
+    public abstract int getSeaThreshold();
     public abstract Deplacement getBaliseRandomDeplacementStrategy(Point gpsLoc);
 
 }

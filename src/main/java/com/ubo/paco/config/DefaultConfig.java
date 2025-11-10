@@ -59,6 +59,11 @@ public class DefaultConfig extends Config {
     }
 
     @Override
+    public int getSeaThreshold() {
+        return 50;
+    }
+
+    @Override
     public Deplacement getBaliseRandomDeplacementStrategy(Point gpsLoc) {
         Random rand = new Random();
         int choice = rand.nextInt(0,2);

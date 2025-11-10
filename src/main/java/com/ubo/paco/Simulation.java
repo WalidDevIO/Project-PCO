@@ -72,7 +72,7 @@ public class Simulation {
                         new CenterPositionStrategy(),
                         new Satellite(
                                 new DeplacementHorizontal(config.getRandomSpeed(), config),
-                                new Point(0,random(0, config.getSeaLevel() - 50)),
+                                new Point(0,random(0, config.getSeaLevel() - config.getSeaThreshold())),
                                 config
                         )
                 )
@@ -91,7 +91,7 @@ public class Simulation {
                         new CenterPositionStrategy(),
                         new Balise(
                                 new DeplacementHorizontal(config.getRandomSpeed(), config),
-                                new Point(0, random(config.getSeaLevel() + 50, config.getWinHeight())),
+                                new Point(0, random(config.getSeaLevel() + config.getSeaThreshold(), config.getWinHeight())),
                                 config
                         )
                 )
