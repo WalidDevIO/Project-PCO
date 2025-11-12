@@ -46,8 +46,16 @@ public class Simulation {
         eventHandler.registerListener(StartSyncEvent.class, view);
         eventHandler.registerListener(EndSyncEvent.class, view);
         space.add(view);
+        space.repaint();
+        space.setComponentZOrder(view, 0);
         threadPool.add(new Thread(satellite));
         return view;
+    }
+    public void r(){
+        System.out.println("Simulation started");
+        for (Thread thread : threadPool) {
+            thread.start();
+        }
     }
 
     public ViewElementMobile addBalise(Component component, Component syncComponent, CenterPositionStrategy strategyPosition, Balise balise) {

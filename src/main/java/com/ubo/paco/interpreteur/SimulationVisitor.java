@@ -84,16 +84,22 @@ public class SimulationVisitor extends SatelliteLangBaseVisitor<Object> {
 
     @Override
     public Object visitAssignStmt(SatelliteLangParser.AssignStmtContext ctx) {
-        String varName = ctx.ID(0).getText();
-        String className = ctx.ID(1).getText();
+        System.out.println(variables);
+        String varName = ctx.ID().getText(); // le nom de la variable à créer
+        SatelliteLangParser.InstantiationContext instCtx = ctx.instantiation();
+
+        if (instCtx == null) {
+            throw new RuntimeException("Aucune instanciation trouvée pour " + varName);
+        }
+
+        String className = instCtx.ID().getText(); // le nom de la classe à instancier
 
         // Collecter les arguments
         Map<String, Object> args = new LinkedHashMap<>();
-        if (ctx.argList() != null) {
-            var argListCtx = ctx.argList();
-            for (var argCtx : argListCtx.arg()) {
+        if (instCtx.argList() != null) {
+            for (var argCtx : instCtx.argList().arg()) {
                 String argName = argCtx.ID().getText();
-                Object argValue = visit(argCtx.expr());
+                Object argValue = visit(argCtx.expr()); // peut être un autre new ou variable
                 args.put(argName, argValue);
             }
         }
@@ -110,6 +116,7 @@ public class SimulationVisitor extends SatelliteLangBaseVisitor<Object> {
             throw new RuntimeException("Erreur lors de la création de " + className, e);
         }
     }
+
 
     @Override
     public Object visitMethodCall(SatelliteLangParser.MethodCallContext ctx) {
@@ -145,37 +152,6 @@ public class SimulationVisitor extends SatelliteLangBaseVisitor<Object> {
     @Override
     public Object visitArg(SatelliteLangParser.ArgContext ctx) {
         return visit(ctx.expr());
-    }
-
-    @Override
-    public Object visitExpr(SatelliteLangParser.ExprContext ctx) {
-        if (ctx.NUMBER() != null) {
-            String num = ctx.NUMBER().getText();
-            if (num.contains(".")) {
-                return Double.parseDouble(num);
-            }
-            return Integer.parseInt(num);
-        }
-
-        if (ctx.STRING() != null) {
-            String str = ctx.STRING().getText();
-            return str.substring(1, str.length() - 1);
-        }
-
-        if (ctx.HASHWORD() != null) {
-            return ctx.HASHWORD().getText();
-        }
-
-        if (ctx.ID() != null) {
-            String varName = ctx.ID().getText();
-            Object value = variables.get(varName);
-            if (value == null) {
-                throw new RuntimeException("Variable non trouvée : " + varName);
-            }
-            return value;
-        }
-
-        return visitChildren(ctx);
     }
 
     /**
@@ -371,4 +347,46 @@ public class SimulationVisitor extends SatelliteLangBaseVisitor<Object> {
     public Map<String, Object> getVariables() {
         return Collections.unmodifiableMap(variables);
     }
+    @Override
+    public Object visitExpr(SatelliteLangParser.ExprContext ctx) {
+        if (ctx.NUMBER() != null) {
+            return Integer.parseInt(ctx.NUMBER().getText());
+        } else if (ctx.STRING() != null) {
+            // enlever les guillemets
+            String str = ctx.STRING().getText();
+            return str.substring(1, str.length() - 1);
+        } else if (ctx.HASHWORD() != null) {
+            return ctx.HASHWORD().getText();
+        } else if (ctx.ID() != null) {
+            // récupérer variable existante
+            return variables.get(ctx.ID().getText());
+        } else if (ctx.instantiation() != null) {
+            return visitInstantiation(ctx.instantiation());
+        }
+        return null;
+    }
+
+    @Override
+    public Object visitInstantiation(SatelliteLangParser.InstantiationContext ctx) {
+        String className = ctx.ID().getText();
+        Map<String, Object> args = new LinkedHashMap<>();
+        if (ctx.argList() != null) {
+            for (var argCtx : ctx.argList().arg()) {
+                String argName = argCtx.ID().getText();
+                Object argValue = visit(argCtx.expr()); // récursif pour les new imbriqués
+                args.put(argName, argValue);
+            }
+        }
+
+        try {
+            Class<?> clazz = findClass(className);
+            return createInstance(clazz, args);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException("Classe introuvable : " + className +
+                    " dans les packages : " + allPackages, e);
+        } catch (Exception e) {
+            throw new RuntimeException("Erreur lors de la création de " + className, e);
+        }
+    }
+
 }

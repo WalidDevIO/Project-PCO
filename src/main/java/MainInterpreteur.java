@@ -4,9 +4,6 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import simulation.antlr4.SatelliteLangLexer;
 import simulation.antlr4.SatelliteLangParser;
 
-import java.io.File;
-import java.io.IOException;
-
 public class MainInterpreteur {
 
     public static void main(String[] args) {
