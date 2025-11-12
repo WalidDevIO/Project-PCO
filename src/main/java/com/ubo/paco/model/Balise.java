@@ -42,7 +42,7 @@ public class Balise extends ElementMobile {
         setDeplacement(
             new DeplacementDescente(
                 config.getLinearMovementSpeed(),
-                new Random().nextInt(config.getSeaLevel(), config.getWinHeight()),
+                new Random().nextInt(config.getSeaLevel() + config.getSeaThreshold(), config.getWinHeight()),
                 config
             )
         );
