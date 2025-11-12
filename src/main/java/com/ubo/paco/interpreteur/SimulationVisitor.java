@@ -3,24 +3,59 @@ package com.ubo.paco.interpreteur;
 import java.lang.reflect.*;
 import java.util.*;
 import simulation.antlr4.*;
+import io.github.classgraph.*;
 
 public class SimulationVisitor extends SatelliteLangBaseVisitor<Object> {
 
-    private final List<String> basePackages;
+    private final List<String> allPackages = new ArrayList<>(); ;
     private final Map<String, Object> variables = new HashMap<>();
 
     /**
-     * @param basePackages Liste des packages de base où chercher les classes
+     * @param externalPackages Liste des packages où chercher les classes
      */
-    public SimulationVisitor(String... basePackages) {
-        this.basePackages = Arrays.asList(basePackages);
+    public SimulationVisitor(String... externalPackages) {
+        this.allPackages.addAll(Arrays.asList(externalPackages));
+        this.allPackages.add("com.ubo.paco");
     }
 
     /**
-     * @param basePackages Liste des packages de base où chercher les classes
+     * @param externalPackages Liste des packages où chercher les classes
      */
-    public SimulationVisitor(List<String> basePackages) {
-        this.basePackages = new ArrayList<>(basePackages);
+    public SimulationVisitor(ArrayList<String> externalPackages) {
+        this.allPackages.addAll(externalPackages);
+        this.allPackages.add("com.ubo.paco");
+    }
+
+    /**
+     * Cherche une classe dans tous les packages (récursif sur sous-packages grâce à ClassGraph)
+     */
+    public Class<?> findClass(String className) throws ClassNotFoundException {
+
+        try (ScanResult scanResult = new ClassGraph()
+                .enableAllInfo()
+                .acceptPackages(allPackages.toArray(new String[0]))
+                .ignoreClassVisibility()
+                .scan()) {
+
+            ClassInfo ci = scanResult.getAllClasses().stream()
+                    .filter(c -> c.getSimpleName().equals(className))
+                    .findFirst()
+                    .orElse(null);
+
+            if (ci != null) return ci.loadClass();
+        }
+
+        for (String packageName : allPackages) {
+            try {
+                String fullClassName = packageName + "." + className;
+                return Class.forName(fullClassName);
+            } catch (ClassNotFoundException ignored) {
+            }
+        }
+
+
+
+        throw new ClassNotFoundException("Classe " + className + " introuvable dans les packages : " + allPackages);
     }
 
     @Override
@@ -70,7 +105,7 @@ public class SimulationVisitor extends SatelliteLangBaseVisitor<Object> {
             return instance;
         } catch (ClassNotFoundException e) {
             throw new RuntimeException("Classe introuvable : " + className +
-                    " dans les packages : " + basePackages, e);
+                    " dans les packages : " + allPackages, e);
         } catch (Exception e) {
             throw new RuntimeException("Erreur lors de la création de " + className, e);
         }
@@ -141,31 +176,6 @@ public class SimulationVisitor extends SatelliteLangBaseVisitor<Object> {
         }
 
         return visitChildren(ctx);
-    }
-
-    /**
-     * Cherche une classe dans tous les packages de base
-     */
-    private Class<?> findClass(String className) throws ClassNotFoundException {
-        // D'abord essayer le nom de classe directement (peut contenir le package complet)
-        try {
-            return Class.forName(className);
-        } catch (ClassNotFoundException e) {
-            // Ignorer et continuer
-        }
-
-        // Essayer dans chaque package de base
-        ClassNotFoundException lastException = null;
-        for (String basePackage : basePackages) {
-            try {
-                return Class.forName(basePackage + "." + className);
-            } catch (ClassNotFoundException e) {
-                lastException = e;
-            }
-        }
-
-        throw new ClassNotFoundException("Classe " + className +
-                " introuvable dans les packages : " + basePackages, lastException);
     }
 
     /**
@@ -360,9 +370,5 @@ public class SimulationVisitor extends SatelliteLangBaseVisitor<Object> {
 
     public Map<String, Object> getVariables() {
         return Collections.unmodifiableMap(variables);
-    }
-
-    public List<String> getBasePackages() {
-        return Collections.unmodifiableList(basePackages);
     }
 }

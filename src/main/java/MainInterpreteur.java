@@ -26,12 +26,7 @@ public class MainInterpreteur {
             var tree = parser.program();
 
             // Visiteur pour interpréter
-            var visitor = new SimulationVisitor("com.ubo.paco.graphicsElement",
-                    "com.ubo.paco.deplacement",
-                    "com.ubo.paco.config",
-                    "com.ubo.paco.model",
-                    "com.ubo.paco",
-                    "java.awt");
+            var visitor = new SimulationVisitor("java.awt");
             visitor.visit(tree);
 
             System.out.println(visitor.getVariables());

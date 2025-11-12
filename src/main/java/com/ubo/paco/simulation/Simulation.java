@@ -1,4 +1,4 @@
-package com.ubo.paco;
+package com.ubo.paco.simulation;
 
 import com.ubo.paco.config.Config;
 import com.ubo.paco.config.DefaultConfig;
