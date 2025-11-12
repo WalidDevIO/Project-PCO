@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "com.ubo.paco"
-version = "1.0‑SNAPSHOT"
+version = "1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
