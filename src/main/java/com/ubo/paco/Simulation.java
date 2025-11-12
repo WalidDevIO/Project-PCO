@@ -29,6 +29,10 @@ public class Simulation {
     public Simulation() {
     }
 
+    public Simulation(Config config) {
+        this.config = config;
+    }
+
     public Simulation(Config config, NiSpace space) {
         this.config = config;
         this.space = space;
