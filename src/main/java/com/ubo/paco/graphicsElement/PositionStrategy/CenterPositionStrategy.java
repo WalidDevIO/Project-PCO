@@ -5,6 +5,9 @@ import nicellipse.component.NiRectangle;
 
 import java.awt.*;
 
+/**
+ * Cette stratégie de positionnement ancre le centre des composants graphiques par rapport au centre de la vue à laquelle ils appartiennent
+ */
 public class CenterPositionStrategy implements PositionStrategy {
     @Override
     public void position(Component child, Component sync, NiRectangle parent, ElementMobile model) {

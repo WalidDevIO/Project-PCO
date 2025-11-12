@@ -22,7 +22,7 @@ public class Satellite extends ElementMobile {
         int satelliteX = this.getGpsLoc().x;
         int baliseX = balise.getGpsLoc().x;
         if (Math.abs(satelliteX - baliseX) <= config.getSyncWindowSize()) {
-            runner.runTwoSyncs(this, balise);
+            runner.synchronize(this, balise);
         }
     }
 

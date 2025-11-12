@@ -3,10 +3,22 @@ package com.ubo.paco.deplacement;
 import com.ubo.paco.config.Config;
 import com.ubo.paco.model.ElementMobile;
 
+/**
+ * Déplacement de descente jusqu'à une hauteur donnée.
+ *
+ * Contrairement au déplacement de remontée, où la hauteur voulue est celle de la mer (obtenue dans la config),
+ * ici chaque élément mobile peut descendre à une hauteur différente, à définir dans le constructeur.
+ */
 public class DeplacementDescente extends Deplacement {
     private int bottom;
     private boolean done = false;
 
+    /**
+     * Crée le déplacement.
+     * @param speed vitesse du déplacement
+     * @param bottom hauteur à atteindre
+     * @param config configuration de la simulation
+     */
     public DeplacementDescente(int speed, int bottom, Config config) {
         super(speed, config);
         this.bottom = bottom;

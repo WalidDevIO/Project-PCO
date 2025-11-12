@@ -3,12 +3,15 @@ package com.ubo.paco.deplacement;
 import com.ubo.paco.config.Config;
 import com.ubo.paco.model.ElementMobile;
 
+/**
+ * Déplacement d'un ElementMobile selon une sinusoide.
+ */
 public class DeplacementSinusoide extends Deplacement {
     private int xOffset, yOffset;
 
     /**
-     *
-     * @param speed
+     * Crée le déplacement.
+     * @param speed vitesse du déplacement
      * @param xOffset position x de la balise au depart de ce deplacement
      * @param yOffset position y de la balise au depart de ce deplacement
      */

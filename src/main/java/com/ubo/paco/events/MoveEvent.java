@@ -3,6 +3,9 @@ package com.ubo.paco.events;
 import com.ubo.paco.view.ViewElementMobile;
 import java.awt.Point;
 
+/**
+ * Cet événement notifie la vue de la nouvelle position d'un ElementMobile
+ */
 public class MoveEvent extends AbstractEvent {
 
     private final Point position;

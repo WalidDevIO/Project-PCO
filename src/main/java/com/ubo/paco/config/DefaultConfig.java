@@ -5,6 +5,7 @@ import java.awt.Point;
 
 import com.ubo.paco.deplacement.Deplacement;
 import com.ubo.paco.deplacement.DeplacementHorizontal;
+import com.ubo.paco.deplacement.DeplacementImmobile;
 import com.ubo.paco.deplacement.DeplacementSinusoide;
 
 public class DefaultConfig extends Config {
@@ -71,9 +72,10 @@ public class DefaultConfig extends Config {
     @Override
     public Deplacement getBaliseRandomDeplacementStrategy(Point gpsLoc) {
         Random rand = new Random();
-        int choice = rand.nextInt(0,2);
+        int choice = rand.nextInt(0,3);
         return switch (choice) {
             case 0 -> new DeplacementHorizontal(getRandomSpeed(), this);
+            case 1 -> new DeplacementImmobile(0, this);
             default -> new DeplacementSinusoide(getRandomSpeed(), gpsLoc.x, gpsLoc.y, this);
         };
     }

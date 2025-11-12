@@ -9,6 +9,9 @@ import java.util.concurrent.Executors;
 
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Démarre simultanément la synchro côté satellite et côté balise.
+ */
 public class SyncRunner {
     private final ExecutorService executor;
 
@@ -33,7 +36,7 @@ public class SyncRunner {
     }
 
     // Soumet deux syncs (utilise submitSync pour éviter les doubles)
-    public void runTwoSyncs(ElementMobile a, ElementMobile b) {
+    public void synchronize(ElementMobile a, ElementMobile b) {
         submitSync(a);
         submitSync(b);
     }
