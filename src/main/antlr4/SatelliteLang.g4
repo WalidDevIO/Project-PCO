@@ -1,5 +1,9 @@
 grammar SatelliteLang;
 
+@header {
+package simulation.antlr4;
+}
+
 // --- Règle de départ ---
 program
     : statement* EOF
