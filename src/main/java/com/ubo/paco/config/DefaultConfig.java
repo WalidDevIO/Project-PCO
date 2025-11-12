@@ -3,10 +3,7 @@ package com.ubo.paco.config;
 import java.util.Random;
 import java.awt.Point;
 
-import com.ubo.paco.deplacement.Deplacement;
-import com.ubo.paco.deplacement.DeplacementHorizontal;
-import com.ubo.paco.deplacement.DeplacementImmobile;
-import com.ubo.paco.deplacement.DeplacementSinusoide;
+import com.ubo.paco.deplacement.*;
 
 public class DefaultConfig extends Config {
     @Override
@@ -74,7 +71,8 @@ public class DefaultConfig extends Config {
         Random rand = new Random();
         int choice = rand.nextInt(0,10);
         if(choice < 2) return new DeplacementImmobile(0, this);
-        else if(choice < 6) return new DeplacementHorizontal(getRandomSpeed(), this);
-        else return new DeplacementSinusoide(getRandomSpeed(), gpsLoc.x, gpsLoc.y, this);
+        else if(choice < 5) return new DeplacementHorizontal(getRandomSpeed(), this);
+        else if(choice < 8) return new DeplacementSinusoide(getRandomSpeed(), gpsLoc.x, gpsLoc.y, this);
+        else return new DeplacementAutonome(0, this);
     }
 }
