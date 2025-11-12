@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "com.ubo.paco"
-version = "1.0-SNAPSHOT"
+version = "1.0‑SNAPSHOT"
 
 repositories {
     mavenCentral()
@@ -21,30 +21,30 @@ tasks.withType<JavaCompile> {
 }
 
 dependencies {
-    // ANTLR
     antlr("org.antlr:antlr4:4.13.1")
     implementation("org.antlr:antlr4-runtime:4.13.1")
 
-    // JUnit Jupiter (tests)
     testImplementation(platform("org.junit:junit-bom:5.11.0"))
     testImplementation("org.junit.jupiter:junit-jupiter-api")
     testImplementation("org.junit.jupiter:junit-jupiter-params")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
 }
 
-// --- Configuration ANTLR ---
-tasks.generateGrammarSource {
-    arguments = arguments + listOf("-visitor")
-    outputDirectory = file("${buildDir}/generated-src/antlr/main/simulation/antlr")
+// Configuration ANTLR
+tasks.named<AntlrTask>("generateGrammarSource") {
+    arguments = arguments + listOf("-visitor", "-listener")
+    source = fileTree("src/main/antlr") { include("*.g4") }
+    outputDirectory = file("${buildDir}/generated-src/antlr/main/simulation/antlr4") // <- pas de simulation/antlr4 ici
 }
+
 
 sourceSets {
     named("main") {
         antlr {
-            srcDir("src/main/antlr4")
+            srcDir("src/main/antlr")
         }
         java {
-            srcDir("${buildDir}/generated-src/antlr/main/simulation/antlr")
+            srcDir("${buildDir}/generated-src/antlr/main")
         }
     }
 }
@@ -53,9 +53,3 @@ tasks.test {
     useJUnitPlatform()
 }
 
-tasks.register<JavaExec>("runMain") {
-    group = "application"
-    description = "Exécute la classe Main"
-    classpath = sourceSets["main"].runtimeClasspath
-    mainClass.set("com.ubo.paco.Main")
-}
