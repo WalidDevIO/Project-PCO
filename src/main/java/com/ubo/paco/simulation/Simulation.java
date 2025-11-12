@@ -46,11 +46,11 @@ public class Simulation {
         eventHandler.registerListener(StartSyncEvent.class, view);
         eventHandler.registerListener(EndSyncEvent.class, view);
         space.add(view);
-        space.repaint();
         space.setComponentZOrder(view, 0);
         threadPool.add(new Thread(satellite));
         return view;
     }
+
     public void r(){
         System.out.println("Simulation started");
         for (Thread thread : threadPool) {
@@ -68,6 +68,7 @@ public class Simulation {
             balise.getEventHandler().registerListener(AskSyncEvent.class, satellite);
         }
         space.add(view);
+        space.setComponentZOrder(view, 0);
         threadPool.add(new Thread(balise));
         return view;
     }

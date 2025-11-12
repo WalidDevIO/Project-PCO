@@ -15,14 +15,8 @@ config := new DefaultConfig() ;
 point := new Point(x=100,y=100) ;
 deplacement := new DeplacementHorizontal(speed=5, config=config);
 
-//Création d’un satellite à la hauteur de 2000 mètres
-sat1 := new Satellite(deplacement=deplacement, point=point, config=config) ;
+sat1 := new Satellite (deplacement=deplacement, point=point, config=config) ;
 
-sim.addSatellite(component= new NiSatellite(), syncComponent= new NiSync(), strategyPosition= new CenterPositionStrategy(), satellite=sat1);
-// sat1 démarre
-//sat1.start() ;
+sim.addSatellite (component= new NiSatellite(), syncComponent= new NiSync(), strategyPosition= new CenterPositionStrategy(), satellite=sat1);
+
 sim.r() ;
-// Création d’une balise
-//b1 := new Balise(12,12) ;
-// b1 démarre
-//b1.start() ;
