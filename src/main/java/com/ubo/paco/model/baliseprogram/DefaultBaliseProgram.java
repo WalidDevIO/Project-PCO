@@ -21,7 +21,7 @@ public class DefaultBaliseProgram extends BaliseProgram {
         if(balise.isDeplacementDone()) {
             //On est descendu au fond, on veut se déplacer aléatoirement
             if(balise.haveToCollectData()) {
-                balise.setDeplacement(config.getBaliseRandomDeplacementStrategy(balise.getGpsLoc()));
+                balise.setDeplacement(balise.getDeplacementStrategy());
             } else {
                 //On est remonté en surface, on attend la synchronisation
                 balise.setDeplacement(new DeplacementImmobile(0, config));

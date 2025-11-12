@@ -72,11 +72,9 @@ public class DefaultConfig extends Config {
     @Override
     public Deplacement getBaliseRandomDeplacementStrategy(Point gpsLoc) {
         Random rand = new Random();
-        int choice = rand.nextInt(0,3);
-        return switch (choice) {
-            case 0 -> new DeplacementHorizontal(getRandomSpeed(), this);
-            case 1 -> new DeplacementImmobile(0, this);
-            default -> new DeplacementSinusoide(getRandomSpeed(), gpsLoc.x, gpsLoc.y, this);
-        };
+        int choice = rand.nextInt(0,10);
+        if(choice < 2) return new DeplacementImmobile(0, this);
+        else if(choice < 6) return new DeplacementHorizontal(getRandomSpeed(), this);
+        else return new DeplacementSinusoide(getRandomSpeed(), gpsLoc.x, gpsLoc.y, this);
     }
 }

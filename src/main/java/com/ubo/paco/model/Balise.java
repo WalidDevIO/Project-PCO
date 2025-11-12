@@ -15,10 +15,13 @@ public class Balise extends ElementMobile {
     private int dataCountRequired=0;
     private int runnerCount=0;
 
+    private Deplacement deplacementStrategy;
+
     private BaliseProgram prog;
 
     public Balise(Deplacement deplacement, Point point, Config config) {
         super(deplacement, point, config);
+        this.deplacementStrategy = deplacement;
         this.prog = new DefaultBaliseProgram(this, config);
         this.dataCountRequired = new Random().nextInt(config.getMinData(), config.getMaxData());
     }
@@ -33,6 +36,14 @@ public class Balise extends ElementMobile {
 
     public boolean haveToCollectData() {
         return this.data < dataCountRequired;
+    }
+
+    public Deplacement getDeplacementStrategy() {
+        return deplacementStrategy;
+    }
+
+    public void setDeplacementStrategy(Deplacement deplacementStrategy) {
+        this.deplacementStrategy = deplacementStrategy;
     }
 
     @Override

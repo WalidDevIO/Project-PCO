@@ -84,14 +84,18 @@ public class Simulation {
     public List<ViewElementMobile> generateBalises(int count) {
         List<ViewElementMobile> balises = new ArrayList<>();
         for (int i = 0; i < count; i++) {
+            Point origin = new Point(
+                    random(0, config.getWinWidth()),
+                    random(config.getSeaLevel() + config.getSeaThreshold(), config.getWinHeight())
+            );
             balises.add(
                 this.addBalise(
                         new NiBalise(),
                         new NiSync(),
                         new CenterPositionStrategy(),
                         new Balise(
-                                new DeplacementHorizontal(config.getRandomSpeed(), config),
-                                new Point(0, random(config.getSeaLevel() + config.getSeaThreshold(), config.getWinHeight())),
+                                config.getBaliseRandomDeplacementStrategy(origin),
+                                origin,
                                 config
                         )
                 )
