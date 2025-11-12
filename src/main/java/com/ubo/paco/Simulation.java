@@ -36,7 +36,7 @@ public class Simulation {
 
     public ViewElementMobile addSatellite(Component component, Component syncComponent, CenterPositionStrategy strategyPosition, Satellite satellite) {
         satellitesPool.add(satellite);
-        ViewElementMobile view = new ViewElementMobile(component, syncComponent, strategyPosition, satellite);
+        ViewElementMobile view = new ViewElementMobile(component, syncComponent, strategyPosition);
         EventHandler eventHandler = satellite.getEventHandler();
         eventHandler.registerListener(MoveEvent.class, view);
         eventHandler.registerListener(StartSyncEvent.class, view);
@@ -47,7 +47,7 @@ public class Simulation {
     }
 
     public ViewElementMobile addBalise(Component component, Component syncComponent, CenterPositionStrategy strategyPosition, Balise balise) {
-        ViewElementMobile view = new ViewElementMobile(component, syncComponent, strategyPosition, balise);
+        ViewElementMobile view = new ViewElementMobile(component, syncComponent, strategyPosition);
         EventHandler eventHandler = balise.getEventHandler();
         eventHandler.registerListener(MoveEvent.class, view);
         eventHandler.registerListener(StartSyncEvent.class, view);

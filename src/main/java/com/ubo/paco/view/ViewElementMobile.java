@@ -10,13 +10,11 @@ import com.ubo.paco.events.StartSyncEvent;
 import java.awt.*;
 
 public class ViewElementMobile extends NiRectangle {
-    private ElementMobile model;
     private Component component;
     private Component syncComponent;
     private PositionStrategy strategyPosition;
 
-    public ViewElementMobile(Component component, Component syncComponent, PositionStrategy strategyPosition, ElementMobile model) {
-        this.model = model;
+    public ViewElementMobile(Component component, Component syncComponent, PositionStrategy strategyPosition) {
         this.syncComponent = syncComponent;
         this.component = component;
         this.strategyPosition = strategyPosition;
@@ -25,14 +23,9 @@ public class ViewElementMobile extends NiRectangle {
         this.setOpaque(false);
         this.setLayout(null);
 
-        this.strategyPosition.position(this.component, syncComponent, this, model);
-
         this.add(component);
     }
 
-    public ElementMobile getModel() {
-        return model;
-    }
 
     public Component getComponent() {
         return component;
@@ -59,12 +52,10 @@ public class ViewElementMobile extends NiRectangle {
     }
 
     public void onMove(MoveEvent event) {
+        ElementMobile model = (ElementMobile) event.getSource();
         this.strategyPosition.position(this.component, syncComponent, this, model);
     }
 
-    public void setModel(ElementMobile model) {
-        this.model = model;
-    }
 
     public void onSyncStart(StartSyncEvent event) {
         this.add(syncComponent);

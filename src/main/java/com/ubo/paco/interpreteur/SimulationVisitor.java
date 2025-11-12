@@ -1,5 +1,6 @@
 package com.ubo.paco.interpreteur;
 
+import com.ubo.paco.Simulation;
 import com.ubo.paco.model.Balise;
 import com.ubo.paco.model.Satellite;
 import simulation.antlr4.SatelliteLangBaseVisitor;
@@ -11,6 +12,7 @@ import java.util.Map;
 public class SimulationVisitor extends SatelliteLangBaseVisitor<Object> {
     // Stocke les variables créées
     private final Map<String, Object> variables = new HashMap<>();
+    private final Simulation simulation = new Simulation();
 
     public Map<String, Object> getVariables() {
         return variables;
