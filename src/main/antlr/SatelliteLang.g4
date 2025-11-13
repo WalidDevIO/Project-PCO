@@ -16,9 +16,9 @@ statement
     | COMMENT                       #commentStatement
     ;
 
-// --- Affectation : var := new ClassName(params) ---
+// --- Affectation : var := expr ---
 assignStmt
-    : ID ':=' instantiation
+    : ID ':=' expr
     ;
 
 // --- Appel méthode : var.method() ---
@@ -35,13 +35,14 @@ arg
     : ID '=' expr
     ;
 
-// --- Expressions simples et instanciations ---
+// --- Expressions possibles ---
 expr
     : NUMBER
     | STRING
     | HASHWORD
     | ID
     | instantiation
+    | methodCall         // ← ajout ici pour gérer sim1.createSatellite()
     ;
 
 // --- Instanciation : new ClassName(params) ---

@@ -22,6 +22,9 @@ public class SimulationHeadless implements Simulation {
     private Config config = new DefaultConfig();
     private boolean running = false;
 
+    public SimulationHeadless() {
+    }
+
     public SimulationHeadless(Config config) {
         this.config = config;
     }

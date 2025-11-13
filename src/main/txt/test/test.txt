@@ -23,3 +23,7 @@ sim.r() ;
 
 
 sat1.start() ;
+
+
+sim1 := new SimulationHeadless() ;
+sat1 := sim1.createSatellite(x=100, y=100);

@@ -7,30 +7,22 @@ import io.github.classgraph.*;
 
 public class SimulationVisitor extends SatelliteLangBaseVisitor<Object> {
 
-    private final List<String> allPackages = new ArrayList<>(); ;
+    private final List<String> allPackages = new ArrayList<>();
     private final Map<String, Object> variables = new HashMap<>();
 
-    /**
-     * @param externalPackages Liste des packages où chercher les classes
-     */
+    // --- Constructeurs ---
     public SimulationVisitor(String... externalPackages) {
         this.allPackages.addAll(Arrays.asList(externalPackages));
         this.allPackages.add("com.ubo.paco");
     }
 
-    /**
-     * @param externalPackages Liste des packages où chercher les classes
-     */
     public SimulationVisitor(ArrayList<String> externalPackages) {
         this.allPackages.addAll(externalPackages);
         this.allPackages.add("com.ubo.paco");
     }
 
-    /**
-     * Cherche une classe dans tous les packages (récursif sur sous-packages grâce à ClassGraph)
-     */
+    // --- Recherche de classes ---
     public Class<?> findClass(String className) throws ClassNotFoundException {
-
         try (ScanResult scanResult = new ClassGraph()
                 .enableAllInfo()
                 .acceptPackages(allPackages.toArray(new String[0]))
@@ -49,15 +41,13 @@ public class SimulationVisitor extends SatelliteLangBaseVisitor<Object> {
             try {
                 String fullClassName = packageName + "." + className;
                 return Class.forName(fullClassName);
-            } catch (ClassNotFoundException ignored) {
-            }
+            } catch (ClassNotFoundException ignored) {}
         }
-
-
 
         throw new ClassNotFoundException("Classe " + className + " introuvable dans les packages : " + allPackages);
     }
 
+    // --- Programme principal ---
     @Override
     public Object visitProgram(SatelliteLangParser.ProgramContext ctx) {
         Object result = null;
@@ -82,42 +72,20 @@ public class SimulationVisitor extends SatelliteLangBaseVisitor<Object> {
         return null;
     }
 
+    // --- Affectation : var := expr ---
     @Override
     public Object visitAssignStmt(SatelliteLangParser.AssignStmtContext ctx) {
-        System.out.println(variables);
-        String varName = ctx.ID().getText(); // le nom de la variable à créer
-        SatelliteLangParser.InstantiationContext instCtx = ctx.instantiation();
+        String varName = ctx.ID().getText();
+        SatelliteLangParser.ExprContext exprCtx = ctx.expr();
 
-        if (instCtx == null) {
-            throw new RuntimeException("Aucune instanciation trouvée pour " + varName);
-        }
+        Object value = visit(exprCtx);
+        variables.put(varName, value);
 
-        String className = instCtx.ID().getText(); // le nom de la classe à instancier
-
-        // Collecter les arguments
-        Map<String, Object> args = new LinkedHashMap<>();
-        if (instCtx.argList() != null) {
-            for (var argCtx : instCtx.argList().arg()) {
-                String argName = argCtx.ID().getText();
-                Object argValue = visit(argCtx.expr()); // peut être un autre new ou variable
-                args.put(argName, argValue);
-            }
-        }
-
-        try {
-            Class<?> clazz = findClass(className);
-            Object instance = createInstance(clazz, args);
-            variables.put(varName, instance);
-            return instance;
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException("Classe introuvable : " + className +
-                    " dans les packages : " + allPackages, e);
-        } catch (Exception e) {
-            throw new RuntimeException("Erreur lors de la création de " + className, e);
-        }
+        System.out.println("[DEBUG] " + varName + " := " + value);
+        return value;
     }
 
-
+    // --- Appel de méthode : obj.method(a=1, b=2) ---
     @Override
     public Object visitMethodCall(SatelliteLangParser.MethodCallContext ctx) {
         String varName = ctx.ID(0).getText();
@@ -128,155 +96,133 @@ public class SimulationVisitor extends SatelliteLangBaseVisitor<Object> {
             throw new RuntimeException("Variable non trouvée : " + varName);
         }
 
-        // Collecter les arguments de la méthode
+        // Collecte et évaluation correcte des arguments
         List<Object> methodArgs = new ArrayList<>();
         if (ctx.argList() != null) {
             for (var argCtx : ctx.argList().arg()) {
-                Object argValue = visit(argCtx.expr());
-                methodArgs.add(argValue);
+                Object value = visit(argCtx.expr()); // <--- garde le typage dynamique
+                methodArgs.add(value);
             }
         }
 
         try {
-            return invokeMethod(target, methodName, methodArgs);
+            Object result = invokeMethod(target, methodName, methodArgs);
+
+            // (Optionnel) : log de debug
+            System.out.printf("[DEBUG] %s.%s(%s) => %s%n",
+                    varName, methodName,
+                    methodArgs.stream().map(Object::toString).toList(),
+                    result);
+
+            return result;
+        } catch (IllegalArgumentException e) {
+            System.err.println("[ERREUR TYPE] lors de " + methodName +
+                    " sur " + target.getClass().getSimpleName());
+            System.err.println("Arguments passés : " + methodArgs);
+            throw e;
         } catch (Exception e) {
-            throw new RuntimeException("Erreur lors de l'appel de " + methodName + " sur " + varName, e);
+            throw new RuntimeException("Erreur lors de l'appel de " + methodName +
+                    " sur " + varName + " (" + target.getClass().getSimpleName() + ")", e);
         }
     }
 
+
+    // --- Expressions ---
     @Override
-    public Object visitArgList(SatelliteLangParser.ArgListContext ctx) {
-        return visitChildren(ctx);
+    public Object visitExpr(SatelliteLangParser.ExprContext ctx) {
+        if (ctx.NUMBER() != null) {
+            String numText = ctx.NUMBER().getText();
+            return numText.contains(".") ? Double.parseDouble(numText) : Integer.parseInt(numText);
+        }
+        if (ctx.STRING() != null) {
+            String str = ctx.STRING().getText();
+            return str.substring(1, str.length() - 1); // retirer guillemets
+        }
+        if (ctx.HASHWORD() != null) {
+            return ctx.HASHWORD().getText();
+        }
+        if (ctx.ID() != null) {
+            String name = ctx.ID().getText();
+            if (!variables.containsKey(name))
+                throw new RuntimeException("Variable non définie : " + name);
+            return variables.get(name);
+        }
+        if (ctx.instantiation() != null) {
+            return visit(ctx.instantiation());
+        }
+        if (ctx.methodCall() != null) {
+            return visit(ctx.methodCall());
+        }
+        throw new RuntimeException("Expression inconnue : " + ctx.getText());
     }
 
+    // --- Instanciation : new ClassName(a=1, b=2) ---
     @Override
-    public Object visitArg(SatelliteLangParser.ArgContext ctx) {
-        return visit(ctx.expr());
-    }
+    public Object visitInstantiation(SatelliteLangParser.InstantiationContext ctx) {
+        String className = ctx.ID().getText();
 
-    /**
-     * Crée une instance en trouvant le constructeur approprié
-     */
-    private Object createInstance(Class<?> clazz, Map<String, Object> args) throws Exception {
-        if (args.isEmpty()) {
-            try {
-                return clazz.getDeclaredConstructor().newInstance();
-            } catch (NoSuchMethodException e) {
-                throw new RuntimeException("La classe " + clazz.getSimpleName() +
-                        " n'a pas de constructeur sans paramètres et aucun argument n'a été fourni", e);
+        Map<String, Object> args = new LinkedHashMap<>();
+        if (ctx.argList() != null) {
+            for (var argCtx : ctx.argList().arg()) {
+                String argName = argCtx.ID().getText();
+                Object argValue = visit(argCtx.expr());
+                args.put(argName, argValue);
             }
         }
 
-        // Essayer avec les valeurs dans l'ordre fourni
+        try {
+            Class<?> clazz = findClass(className);
+            return createInstance(clazz, args);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException("Classe introuvable : " + className +
+                    " dans les packages : " + allPackages, e);
+        } catch (Exception e) {
+            throw new RuntimeException("Erreur lors de la création de " + className, e);
+        }
+    }
+
+    // --- Création d'instances ---
+    private Object createInstance(Class<?> clazz, Map<String, Object> args) throws Exception {
+        if (args.isEmpty()) {
+            return clazz.getDeclaredConstructor().newInstance();
+        }
+
         Object[] argValues = args.values().toArray();
 
-        // Chercher un constructeur avec le bon nombre de paramètres et types compatibles
         for (Constructor<?> constructor : clazz.getConstructors()) {
             if (tryConstructor(constructor, argValues)) {
                 return constructor.newInstance(argValues);
             }
         }
 
-        // Essayer avec un constructeur sans paramètres + setters
         return createWithSetters(clazz, args);
     }
 
-
-    /**
-     * Essaie de créer l'instance avec constructeur sans paramètres + setters
-     */
     private Object createWithSetters(Class<?> clazz, Map<String, Object> args) throws Exception {
-        Object instance;
-        try {
-            instance = clazz.getDeclaredConstructor().newInstance();
-        } catch (NoSuchMethodException e) {
-            throw new RuntimeException(buildConstructorErrorMessage(clazz, args), e);
-        }
+        Object instance = clazz.getDeclaredConstructor().newInstance();
 
-        // Appliquer les setters
         for (Map.Entry<String, Object> entry : args.entrySet()) {
-            boolean success = false;
-
-            // Essayer setXxx
             String setterName = "set" + capitalize(entry.getKey());
             try {
                 invokeMethod(instance, setterName, Collections.singletonList(entry.getValue()));
-                success = true;
             } catch (Exception e) {
-                // Essayer avec le nom tel quel
                 try {
                     invokeMethod(instance, entry.getKey(), Collections.singletonList(entry.getValue()));
-                    success = true;
-                } catch (Exception e2) {
-                    // Ignorer
+                } catch (Exception ignored) {
+                    System.err.println("[WARN] Impossible d'appliquer " + entry.getKey() + " sur " + clazz.getSimpleName());
                 }
             }
-
-            if (!success) {
-                System.err.println("Avertissement : impossible de définir " + entry.getKey() +
-                        " pour " + clazz.getSimpleName());
-            }
         }
-
         return instance;
     }
 
-    /**
-     * Vérifie si un constructeur peut être utilisé avec les arguments donnés
-     */
-    private boolean tryConstructor(Constructor<?> constructor, Object[] args) {
-        Class<?>[] paramTypes = constructor.getParameterTypes();
-        return isCompatible(paramTypes, args);
-    }
-
-    /**
-     * Construit un message d'erreur détaillé sur les constructeurs disponibles
-     */
-    private String buildConstructorErrorMessage(Class<?> clazz, Map<String, Object> args) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Impossible de créer une instance de ").append(clazz.getSimpleName());
-        sb.append("\nArguments fournis (").append(args.size()).append(") : ");
-
-        int i = 0;
-        for (Map.Entry<String, Object> entry : args.entrySet()) {
-            sb.append(entry.getKey()).append("=");
-            if (entry.getValue() != null) {
-                sb.append(entry.getValue().getClass().getSimpleName());
-            } else {
-                sb.append("null");
-            }
-            if (i < args.size() - 1) sb.append(", ");
-            i++;
-        }
-
-        sb.append("\n\nConstructeurs disponibles :");
-        Constructor<?>[] constructors = clazz.getConstructors();
-        if (constructors.length == 0) {
-            sb.append("\n  Aucun constructeur public");
-        } else {
-            for (Constructor<?> constructor : constructors) {
-                sb.append("\n  - ").append(clazz.getSimpleName()).append("(");
-                Class<?>[] paramTypes = constructor.getParameterTypes();
-                for (int j = 0; j < paramTypes.length; j++) {
-                    sb.append(paramTypes[j].getSimpleName());
-                    if (j < paramTypes.length - 1) sb.append(", ");
-                }
-                sb.append(")");
-            }
-        }
-
-        return sb.toString();
-    }
-    /**
-     * Invoque une méthode de manière dynamique
-     */
+    // --- Invocation dynamique ---
     private Object invokeMethod(Object target, String methodName, List<Object> args) throws Exception {
         Class<?> clazz = target.getClass();
         Object[] argArray = args.toArray();
 
         for (Method method : clazz.getMethods()) {
-            if (method.getName().equals(methodName) &&
-                    isCompatible(method.getParameterTypes(), argArray)) {
+            if (method.getName().equals(methodName) && isCompatible(method.getParameterTypes(), argArray)) {
                 return method.invoke(target, argArray);
             }
         }
@@ -285,33 +231,24 @@ public class SimulationVisitor extends SatelliteLangBaseVisitor<Object> {
                 " avec " + args.size() + " argument(s) dans " + clazz.getName());
     }
 
-    /**
-     * Vérifie si les types de paramètres sont compatibles avec les arguments
-     */
+    private boolean tryConstructor(Constructor<?> constructor, Object[] args) {
+        return isCompatible(constructor.getParameterTypes(), args);
+    }
+
     private boolean isCompatible(Class<?>[] paramTypes, Object[] args) {
-        if (paramTypes.length != args.length) {
-            return false;
-        }
+        if (paramTypes.length != args.length) return false;
 
         for (int i = 0; i < paramTypes.length; i++) {
             if (args[i] == null) {
-                if (paramTypes[i].isPrimitive()) {
-                    return false;
-                }
+                if (paramTypes[i].isPrimitive()) return false;
                 continue;
             }
 
-            Class<?> paramType = paramTypes[i];
-            Class<?> argType = args[i].getClass();
+            Class<?> expected = paramTypes[i].isPrimitive() ? wrapperClass(paramTypes[i]) : paramTypes[i];
+            Class<?> actual = args[i].getClass();
 
-            if (paramType.isPrimitive()) {
-                paramType = wrapperClass(paramType);
-            }
-
-            if (!paramType.isAssignableFrom(argType)) {
-                if (!isNumericConversion(paramType, argType)) {
-                    return false;
-                }
+            if (!expected.isAssignableFrom(actual) && !isNumericConversion(expected, actual)) {
+                return false;
             }
         }
         return true;
@@ -334,12 +271,11 @@ public class SimulationVisitor extends SatelliteLangBaseVisitor<Object> {
     }
 
     private String capitalize(String str) {
-        if (str == null || str.isEmpty()) {
-            return str;
-        }
+        if (str == null || str.isEmpty()) return str;
         return str.substring(0, 1).toUpperCase() + str.substring(1);
     }
 
+    // --- Accès variables ---
     public Object getVariable(String name) {
         return variables.get(name);
     }
@@ -347,46 +283,4 @@ public class SimulationVisitor extends SatelliteLangBaseVisitor<Object> {
     public Map<String, Object> getVariables() {
         return Collections.unmodifiableMap(variables);
     }
-    @Override
-    public Object visitExpr(SatelliteLangParser.ExprContext ctx) {
-        if (ctx.NUMBER() != null) {
-            return Integer.parseInt(ctx.NUMBER().getText());
-        } else if (ctx.STRING() != null) {
-            // enlever les guillemets
-            String str = ctx.STRING().getText();
-            return str.substring(1, str.length() - 1);
-        } else if (ctx.HASHWORD() != null) {
-            return ctx.HASHWORD().getText();
-        } else if (ctx.ID() != null) {
-            // récupérer variable existante
-            return variables.get(ctx.ID().getText());
-        } else if (ctx.instantiation() != null) {
-            return visitInstantiation(ctx.instantiation());
-        }
-        return null;
-    }
-
-    @Override
-    public Object visitInstantiation(SatelliteLangParser.InstantiationContext ctx) {
-        String className = ctx.ID().getText();
-        Map<String, Object> args = new LinkedHashMap<>();
-        if (ctx.argList() != null) {
-            for (var argCtx : ctx.argList().arg()) {
-                String argName = argCtx.ID().getText();
-                Object argValue = visit(argCtx.expr()); // récursif pour les new imbriqués
-                args.put(argName, argValue);
-            }
-        }
-
-        try {
-            Class<?> clazz = findClass(className);
-            return createInstance(clazz, args);
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException("Classe introuvable : " + className +
-                    " dans les packages : " + allPackages, e);
-        } catch (Exception e) {
-            throw new RuntimeException("Erreur lors de la création de " + className, e);
-        }
-    }
-
 }
