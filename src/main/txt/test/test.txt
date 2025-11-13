@@ -15,7 +15,7 @@ config := new DefaultConfig() ;
 point := new Point(x=100,y=100) ;
 deplacement := new DeplacementHorizontal(speed=5, config=config);
 
-sat1 := new Satellite (deplacement=deplacement, point=point, config=config) ;
+sat1 := new Satellite (deplacement=horizontal, point=point, config=config) ;
 
 sim.addSatellite (satellite=sat1);
 
