@@ -17,6 +17,9 @@ deplacement := new DeplacementHorizontal(speed=5, config=config);
 
 sat1 := new Satellite (deplacement=deplacement, point=point, config=config) ;
 
-sim.addSatellite (component= new NiSatellite(), syncComponent= new NiSync(), strategyPosition= new CenterPositionStrategy(), satellite=sat1);
+sim.addSatellite (satellite=sat1);
 
 sim.r() ;
+
+
+sat1.start() ;

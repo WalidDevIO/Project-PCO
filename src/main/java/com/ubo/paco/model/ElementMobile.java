@@ -18,11 +18,24 @@ public class ElementMobile implements Runnable {
     private final EventHandler eventHandler = new EventHandler();
     protected Config config;
     protected SyncRunner runner = new SyncRunner(2);
+    protected Thread thread;
 
     public ElementMobile(Deplacement deplacement, Point point, Config config) {
         this.config = config;
         this.depl=deplacement;
         this.gpsLoc=point;
+        this.thread = new Thread(this);
+    }
+
+    public void start() {
+        this.thread.start();
+    }
+    public void stop() {
+        this.thread.interrupt();
+    }
+
+    public Thread getThread() {
+        return this.thread;
     }
 
     public void bouge () {
