@@ -1,4 +1,4 @@
-import com.ubo.paco.Simulation;
+import com.ubo.paco.simulation.Simulation;
 
 public class Main {
     public static void main(String[] args) {

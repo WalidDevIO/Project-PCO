@@ -1,13 +1,25 @@
-// Création d’un satellite à la hauteur de 2000 mètres
-sat1 := new Satellite(hauteur = 2000) ;
-// sat1 démarre
+
+
+sim := new Simulation() ;
+
+
+//sim.generateSatellites(count = 5) ;
+//sim.generateBalises(count = 10) ;
+
+sim.startSimulation() ;
+
+
+
+
+config := new DefaultConfig() ;
+point := new Point(x=100,y=100) ;
+deplacement := new DeplacementHorizontal(speed=5, config=config);
+
+sat1 := new Satellite (deplacement=deplacement, point=point, config=config) ;
+
+sim.addSatellite (satellite=sat1);
+
+sim.r() ;
+
+
 sat1.start() ;
-
-// Création d’une balise
-b1 := new Balise(deplacement = #horizontal, profondeur = 200) ;
-// b1 démarre
-b1.start() ;
-
-sim := new Simulation2(config = #defaultConfig);
-
-sim.addSatellite(sat1);

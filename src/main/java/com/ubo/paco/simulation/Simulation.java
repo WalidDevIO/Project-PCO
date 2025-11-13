@@ -1,4 +1,4 @@
-package com.ubo.paco;
+package com.ubo.paco.simulation;
 
 import com.ubo.paco.config.Config;
 import com.ubo.paco.config.DefaultConfig;
@@ -29,6 +29,10 @@ public class Simulation {
     public Simulation() {
     }
 
+    public Simulation(Config config) {
+        this.config = config;
+    }
+
     public Simulation(Config config, NiSpace space) {
         this.config = config;
         this.space = space;
@@ -42,8 +46,16 @@ public class Simulation {
         eventHandler.registerListener(StartSyncEvent.class, view);
         eventHandler.registerListener(EndSyncEvent.class, view);
         space.add(view);
+        space.setComponentZOrder(view, 0);
         threadPool.add(new Thread(satellite));
         return view;
+    }
+
+    public void r(){
+        System.out.println("Simulation started");
+        for (Thread thread : threadPool) {
+            thread.start();
+        }
     }
 
     public ViewElementMobile addBalise(Component component, Component syncComponent, CenterPositionStrategy strategyPosition, Balise balise) {
@@ -56,6 +68,7 @@ public class Simulation {
             balise.getEventHandler().registerListener(AskSyncEvent.class, satellite);
         }
         space.add(view);
+        space.setComponentZOrder(view, 0);
         threadPool.add(new Thread(balise));
         return view;
     }

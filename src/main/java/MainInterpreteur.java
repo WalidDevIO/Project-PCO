@@ -4,9 +4,6 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import simulation.antlr4.SatelliteLangLexer;
 import simulation.antlr4.SatelliteLangParser;
 
-import java.io.File;
-import java.io.IOException;
-
 public class MainInterpreteur {
 
     public static void main(String[] args) {
@@ -26,7 +23,7 @@ public class MainInterpreteur {
             var tree = parser.program();
 
             // Visiteur pour interpréter
-            var visitor = new SimulationVisitor();
+            var visitor = new SimulationVisitor("java.awt");
             visitor.visit(tree);
 
             System.out.println(visitor.getVariables());

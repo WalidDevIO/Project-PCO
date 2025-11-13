@@ -18,7 +18,7 @@ statement
 
 // --- Affectation : var := new ClassName(params) ---
 assignStmt
-    : ID ':=' 'new' ID '(' argList? ')'
+    : ID ':=' instantiation
     ;
 
 // --- Appel méthode : var.method() ---
@@ -26,7 +26,7 @@ methodCall
     : ID '.' ID '(' argList? ')'
     ;
 
-// --- Liste d'arguments : a = 10, b = "test" ---
+// --- Liste d'arguments : a = 10, b = "test", c = new Class() ---
 argList
     : arg (',' arg)*
     ;
@@ -35,12 +35,18 @@ arg
     : ID '=' expr
     ;
 
-// --- Expressions simples ---
+// --- Expressions simples et instanciations ---
 expr
     : NUMBER
     | STRING
-    | HASHWORD        // ex: #horizontal
-    | ID              // variable ou identifiant
+    | HASHWORD
+    | ID
+    | instantiation
+    ;
+
+// --- Instanciation : new ClassName(params) ---
+instantiation
+    : 'new' ID '(' argList? ')'
     ;
 
 // --- Lexèmes ---
