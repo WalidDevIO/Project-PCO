@@ -8,36 +8,46 @@ import com.ubo.paco.events.ViewEventReceiver;
 public class ViewHeadless implements ViewEventReceiver {
 
     int tickCount = 0;
+    int positionNotifyInterval = 200;
 
     @Override
     public void onMove(MoveEvent event) {
-        if(tickCount % 1000 == 0) {
-            System.out.println("----- Headless View Move Event (All 1000 ticks) -----");
-            System.out.println("Move event received for source: " 
-                + event.getSource().getClass().getSimpleName() 
-                + " " 
-                + event.getSource().hashCode());
-            System.out.println("New position: " + event.getPosition());
+        if(tickCount % positionNotifyInterval == 0) {
+            System.out.println(
+                    "----- Headless View Move Event (All " + positionNotifyInterval + " ticks) -----\n"
+                    + "Move event received for source: "
+                    + event.getSource().getClass().getSimpleName()
+                    + " "
+                    + event.getSource().hashCode()
+                    + "\nNew position: " + event.getPosition()
+            );
+            System.out.flush();
         }
         tickCount++;
     }
 
     @Override
     public void onSyncStart(StartSyncEvent event) {
-        System.out.println("----- Headless View Sync Start Event -----");
-        System.out.println("Sync start event received for source: "
-            + event.getSource().getClass().getSimpleName()
-            + " " 
-            + event.getSource().hashCode());
+        System.out.println(
+                "----- Headless View Sync Start Event -----\n"
+                + "Sync start event received for source: "
+                + event.getSource().getClass().getSimpleName()
+                + " "
+                + event.getSource().hashCode()
+        );
+        System.out.flush();
     }
 
     @Override
     public void onSyncEnd(EndSyncEvent event) {
-        System.out.println("----- Headless View Sync End Event -----");
-        System.out.println("Sync end event received for source: " 
-            + event.getSource().getClass().getSimpleName() 
-            + " " 
-            + event.getSource().hashCode());
+        System.out.println(
+                "----- Headless View Sync End Event -----\n"
+                + "Sync end event received for source: "
+                + event.getSource().getClass().getSimpleName()
+                + " "
+                + event.getSource().hashCode()
+        );
+        System.out.flush();
     }
     
 }
