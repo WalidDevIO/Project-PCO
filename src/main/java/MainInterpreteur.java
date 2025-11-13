@@ -1,34 +1,58 @@
 import com.ubo.paco.interpreteur.SimulationVisitor;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.*;
 import simulation.antlr4.SatelliteLangLexer;
 import simulation.antlr4.SatelliteLangParser;
+
+import java.util.Scanner;
 
 public class MainInterpreteur {
 
     public static void main(String[] args) {
-        try {
+        System.out.println("=== Interpréteur SatelliteLang ===");
+        System.out.println("Tape une commande (ou 'exit' pour quitter)");
+        System.out.println("------------------------------------");
 
-            // Chemin réel vers ton fichier
-            String filePath = "src/main/txt/test/test.txt";
+        Scanner scanner = new Scanner(System.in);
+        SimulationVisitor visitor = new SimulationVisitor("java.awt");
 
-            // Crée un CharStream depuis le fichier
-            var charStream = CharStreams.fromFileName(filePath);
+        while (true) {
+            System.out.print("> "); // prompt
 
-            // Crée le lexer et le parser
-            var lexer = new SatelliteLangLexer(charStream);
-            var parser = new SatelliteLangParser(new CommonTokenStream(lexer));
+            String input = scanner.nextLine().trim();
+            if (input.equalsIgnoreCase("exit") || input.equalsIgnoreCase("quit")) {
+                System.out.println("Fin de l'interpréteur.");
+                break;
+            }
 
-            // Parse le programme
-            var tree = parser.program();
+            if (input.isEmpty()) continue;
 
-            // Visiteur pour interpréter
-            var visitor = new SimulationVisitor("java.awt");
-            visitor.visit(tree);
+            try {
+                // Crée un flux à partir de la ligne saisie
+                CharStream charStream = CharStreams.fromString(input);
 
-            System.out.println(visitor.getVariables());
-        }catch (Exception e){
-            e.printStackTrace();
+                // Lexer et parser
+                SatelliteLangLexer lexer = new SatelliteLangLexer(charStream);
+                CommonTokenStream tokens = new CommonTokenStream(lexer);
+                SatelliteLangParser parser = new SatelliteLangParser(tokens);
+
+                // Parser selon la bonne règle (ici on peut supposer "statement" ou "program")
+                var tree = parser.statement(); // ou parser.program() selon ta grammaire
+
+                // Exécuter
+                Object result = visitor.visit(tree);
+
+                // Afficher résultat ou état
+                if (result != null)
+                    System.out.println("Résultat: " + result);
+
+            } catch (Exception e) {
+                System.err.println("Erreur: " + e.getMessage());
+                e.printStackTrace(System.err);
+            }
         }
+
+        // Affiche l’état final des variables
+        System.out.println("État final des variables:");
+        System.out.println(visitor.getVariables());
     }
 }
