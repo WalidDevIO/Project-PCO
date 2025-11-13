@@ -6,10 +6,11 @@ import com.ubo.paco.graphicsElement.PositionStrategy.PositionStrategy;
 import com.ubo.paco.model.ElementMobile;
 import nicellipse.component.NiRectangle;
 import com.ubo.paco.events.StartSyncEvent;
+import com.ubo.paco.events.ViewEventReceiver;
 
 import java.awt.*;
 
-public class ViewElementMobile extends NiRectangle {
+public class ViewElementMobile extends NiRectangle implements ViewEventReceiver {
     private Component component;
     private Component syncComponent;
     private PositionStrategy strategyPosition;
@@ -51,16 +52,18 @@ public class ViewElementMobile extends NiRectangle {
         this.strategyPosition = strategyPosition;
     }
 
+    @Override
     public void onMove(MoveEvent event) {
         ElementMobile model = (ElementMobile) event.getSource();
         this.strategyPosition.position(this.component, syncComponent, this, model);
     }
 
-
+    @Override
     public void onSyncStart(StartSyncEvent event) {
         this.add(syncComponent);
     }
 
+    @Override
     public void onSyncEnd(EndSyncEvent event) {
         this.remove(syncComponent);
     }

@@ -1,6 +1,5 @@
 package com.ubo.paco.events;
 
-import com.ubo.paco.view.ViewElementMobile;
 import java.awt.Point;
 
 /**
@@ -17,7 +16,7 @@ public class MoveEvent extends AbstractEvent {
 
     @Override
     public void sendTo(Object target) {
-        ((ViewElementMobile)target).onMove(this);
+        ((ViewEventReceiver)target).onMove(this);
     }
 
     public Point getPosition() {
