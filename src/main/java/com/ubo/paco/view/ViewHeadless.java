@@ -13,7 +13,10 @@ public class ViewHeadless implements ViewEventReceiver {
     public void onMove(MoveEvent event) {
         if(tickCount % 1000 == 0) {
             System.out.println("----- Headless View Move Event (All 1000 ticks) -----");
-            System.out.println("Move event received for source: " + event.getSource().getClass().getSimpleName());
+            System.out.println("Move event received for source: " 
+                + event.getSource().getClass().getSimpleName() 
+                + " " 
+                + event.getSource().hashCode());
             System.out.println("New position: " + event.getPosition());
         }
         tickCount++;
@@ -22,13 +25,19 @@ public class ViewHeadless implements ViewEventReceiver {
     @Override
     public void onSyncStart(StartSyncEvent event) {
         System.out.println("----- Headless View Sync Start Event -----");
-        System.out.println("Sync start event received for source: " + event.getSource().getClass().getSimpleName());
+        System.out.println("Sync start event received for source: "
+            + event.getSource().getClass().getSimpleName()
+            + " " 
+            + event.getSource().hashCode());
     }
 
     @Override
     public void onSyncEnd(EndSyncEvent event) {
         System.out.println("----- Headless View Sync End Event -----");
-        System.out.println("Sync end event received for source: " + event.getSource().getClass().getSimpleName());
+        System.out.println("Sync end event received for source: " 
+            + event.getSource().getClass().getSimpleName() 
+            + " " 
+            + event.getSource().hashCode());
     }
     
 }
