@@ -63,7 +63,7 @@ public class Balise extends ElementMobile {
 
     @Override
     public void run() {
-        while (true){
+        while (this.running){
             // Collecte de données aléatoirement
             this.runnerCount++;
             if(this.runnerCount%config.getDataCollectionFrequency()==0 && haveToCollectData()) incr();

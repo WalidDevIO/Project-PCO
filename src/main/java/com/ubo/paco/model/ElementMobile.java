@@ -19,6 +19,7 @@ public class ElementMobile implements Runnable {
     protected Config config;
     protected SyncRunner runner = new SyncRunner(2);
     protected Thread thread;
+    protected Boolean running = false;
 
     public ElementMobile(Deplacement deplacement, Point point, Config config) {
         this.config = config;
@@ -28,10 +29,23 @@ public class ElementMobile implements Runnable {
     }
 
     public void start() {
-        this.thread.start();
+        if (running) return;          // éviter double start
+        running = true;
+
+        // recréer un thread si on a déjà stop → car un Thread ne peut PAS être relancé
+        if (!thread.isAlive()) {
+            thread = new Thread(this);
+        }
+
+        thread.start();
     }
     public void stop() {
-        this.thread.interrupt();
+        running = false;              // demande d'arrêt
+
+        // au cas où le thread dort → on l'interrompt
+        if (thread != null) {
+            thread.interrupt();
+        }
     }
 
     public Thread getThread() {
@@ -97,7 +111,7 @@ public class ElementMobile implements Runnable {
 
     @Override
     public void run() {
-        while (true) {
+        while (running) {
             makeFrame();
         }
     }
