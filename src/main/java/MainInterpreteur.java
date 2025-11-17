@@ -54,5 +54,6 @@ public class MainInterpreteur {
         // Affiche l’état final des variables
         System.out.println("État final des variables:");
         System.out.println(visitor.getVariables());
+        scanner.close();
     }
 }
