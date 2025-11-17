@@ -81,7 +81,6 @@ public class SimulationVisitor extends SatelliteLangBaseVisitor<Object> {
         Object value = visit(exprCtx);
         variables.put(varName, value);
 
-        System.out.println("[DEBUG] " + varName + " := " + value);
         return value;
     }
 
@@ -108,10 +107,6 @@ public class SimulationVisitor extends SatelliteLangBaseVisitor<Object> {
         try {
             Object result = invokeMethod(target, methodName, methodArgs);
 
-            System.out.printf("[DEBUG] %s.%s(%s) => %s%n",
-                    varName, methodName,
-                    methodArgs.stream().map(Object::toString).toList(),
-                    result);
 
             return result;
         } catch (IllegalArgumentException e) {
