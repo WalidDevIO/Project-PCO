@@ -11,6 +11,9 @@ import com.ubo.paco.events.StartSyncEvent;
 import java.awt.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+/**
+ * Représente un élément mobile de la simulation (satellite, balise)
+ */
 public class ElementMobile implements Runnable {
     private Deplacement depl;
     private Point gpsLoc;
@@ -28,6 +31,9 @@ public class ElementMobile implements Runnable {
         this.thread = new Thread(this);
     }
 
+    /**
+     * Active l'élément mobile
+     */
     public void start() {
         if (running) return;          // éviter double start
         running = true;
@@ -39,6 +45,10 @@ public class ElementMobile implements Runnable {
 
         thread.start();
     }
+
+    /**
+     * Désactive l'élément mobile
+     */
     public void stop() {
         running = false;              // demande d'arrêt
 
@@ -52,38 +62,73 @@ public class ElementMobile implements Runnable {
         return this.thread;
     }
 
+    /**
+     * Met à jour la position de l'élément mobile grâce à son déplacement
+     */
     public void bouge () {
         this.depl.bouge(this);
     }
 
+    /**
+     * Change le déplacement de l'élément
+     * @param depl le nouveau déplacement
+     */
     public void setDeplacement(Deplacement depl) {
         this.depl = depl;
     }
 
+    /**
+     * Indique si le déplacement actuel de l'élément est terminé
+     * @return état d'achèvement du déplacement
+     */
     public boolean isDeplacementDone() {
         return this.depl.isDone();
     }
 
+    /**
+     * Modifie la position de l'élément
+     * @param position la nouvelle position de l'élément
+     */
     public void setGpsLoc(Point position) {
         this.gpsLoc = position;
     }
 
+    /**
+     * Modifie la coordonnée y de l'élément
+     * @param y nouvelle coordonnée y de l'élément
+     */
     public void setY(Integer y) {
         this.setGpsLoc(new Point(this.gpsLoc.x, y));
     }
 
+    /**
+     * Modifie la coordonnée x de l'élément
+     * @param x nouvelle coordonnée x de l'élément
+     */
     public void setX(Integer x) {
         this.setGpsLoc(new Point(x, this.gpsLoc.y));
     }
 
+    /**
+     * Obtient la position de l'élément
+     * @return la position de l'élément
+     */
     public Point getGpsLoc() {
         return this.gpsLoc;
     }
 
+    /**
+     * Indique si l'élément est en cours de synchro avec un autre
+     * @return l'état de synchro de l'élément
+     */
     public Boolean getInSync() {
         return inSync.get();
     }
 
+    /**
+     * Définit l'état de synchro de l'élément
+     * @param inSync le nouvel état de synchro de l'élément
+     */
     public void setInSync(Boolean inSync) {
         this.inSync.set(inSync);
     }
@@ -96,6 +141,9 @@ public class ElementMobile implements Runnable {
         return eventHandler;
     }
 
+    /**
+     * Process de synchro de l'élément (début, délai, fin)
+     */
     public void sync() {
         this.setInSync(true);
         getEventHandler().send(new StartSyncEvent(this));
@@ -116,6 +164,9 @@ public class ElementMobile implements Runnable {
         }
     }
 
+    /**
+     * Met a jour la position de l'élément par rapport à son déplacement et en notifie la vue
+     */
     protected void makeFrame() {
         this.bouge();
         eventHandler.send(new MoveEvent(this, this.gpsLoc));
