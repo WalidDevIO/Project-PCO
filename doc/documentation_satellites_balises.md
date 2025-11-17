@@ -1,5 +1,7 @@
 # Documentation Complète - Projet Satellites et Balises
 
+// TODO : convertir les diagrammes mermaid en images
+
 ## Table des matières
 1. [Vue d'ensemble du projet](#vue-densemble-du-projet)
 2. [Architecture générale](#architecture-générale)
@@ -30,7 +32,7 @@ Le projet **Satellites et Balises** est une simulation d'un système de collecte
 - **Java 17** : Langage principal
 - **Gradle** : Système de build
 - **ANTLR 4** : Génération de l'analyseur syntaxique pour l'interpréteur
-- **Swing/AWT** : Interface graphique
+- **Swing/AWT avec Nicellipse** : Interface graphique
 - **ClassGraph** : Scanning dynamique des packages
 - **Multithreading** : Gestion concurrente des éléments mobiles
 
@@ -84,7 +86,11 @@ L'application suit une architecture MVC stricte :
 ## 3. Patterns de conception
 
 ### 3.1 Pattern Strategy
-**Objectif** : Encapsuler différents algorithmes de déplacement
+
+Le pattern stratégie est utilisé pour définir les modes de déplacement des éléments mobiles (balise et satellite).
+Chaque objet de type déplacement dispose d'une méthode `bouge` qui met à jour la position de l'élément mobile, et d'une méthode `isDone` qui indique si le déplacement est terminé.
+
+La méthode `isDone` retourne false par défaut, car seuls certains déplacement peuvent finir : ceux de descente et de remontée par exemple.
 
 #### Implémentation
 ```java
@@ -103,11 +109,19 @@ public abstract class Deplacement {
 - `DeplacementSinusoide` : Mouvement sinusoïdal
 - `DeplacementImmobile` : Aucun mouvement
 - `DeplacementDescente` : Descente verticale jusqu'à une profondeur
-- `DeplacementRemontee` : Remontée jusqu'à la surface
-- `DeplacementAutonome` : Changement dynamique de stratégie
+- `DeplacementRemontee` : Remontée à la surface
+- `DeplacementAutonome` : Changement dynamique de stratégie au cours de la simulation
+
+Le pattern stratégie est aussi utilisé par la balise pour son programme (objet `BaliseProgram`).
+En effet, nous avons souhaité disposer de la possibilité de changer le cycle d'opérations effectué par une balise (descente -> collecte de données -> remontée -> synchro).
+Ce cycle est le cycle par défaut (cf. `DefaultBaliseProgram`), mais nous pourrions créer d'autres fonctionnements pour la balise à l'aide d'autres sous classes de `BaliseProgram`.
+
+La configuration de la simulation (`Config` et `DefaultConfig`) utilise aussi ce pattern.
 
 ### 3.2 Pattern Observer
-**Objectif** : Notification des changements d'état
+
+Les éléments mobiles communiquent entre eux et avec leurs vues grâce à un mécanisme d'événements.
+Un EventHandler permet d'abonner des objets aux notifications d'un type d'événement émises par l'objet qui possède ce handler.
 
 #### Architecture événementielle
 ```java
@@ -124,27 +138,26 @@ public class EventHandler {
 }
 ```
 
+```java
+public abstract class AbstractEvent extends EventObject {
+    public AbstractEvent(Object source) {
+        super(source);
+    }
+
+    public abstract void sendTo(Object target);
+    
+}
+```
+
 #### Types d'événements
 - `MoveEvent` : Notification de déplacement
 - `StartSyncEvent` : Début de synchronisation
 - `EndSyncEvent` : Fin de synchronisation
 - `AskSyncEvent` : Demande de synchronisation balise→satellite
 
-### 3.3 Pattern Factory
-**Utilisation** : Création des éléments de simulation
+### 3.3 Pattern Visitor
 
-```java
-public interface Simulation {
-    Satellite createSatellite(int x, int y);
-    Balise createBalise(int x, int y, String deplacement);
-}
-```
-
-### 3.4 Pattern Command
-**Utilisation** : Interpréteur de commandes pour l'exécution de scripts
-
-### 3.5 Pattern Visitor
-**Utilisation** : Parcours de l'arbre syntaxique dans l'interpréteur
+Pour parcourir l'arbre généré par le parseur ANTLR et instancier les objets de la simulation, nous utilisons un visiteur.
 
 ```java
 public class SimulationVisitor extends SatelliteLangBaseVisitor<Object> {
@@ -186,7 +199,7 @@ com.ubo.paco/
 │   ├── ElementMobile.java
 │   ├── Satellite.java
 │   ├── Balise.java
-│   └── baliseprogram/
+│   └── baliseprogram/       # Comportement des balises
 │       ├── BaliseProgram.java
 │       └── DefaultBaliseProgram.java
 │
@@ -263,6 +276,8 @@ public class ElementMobile implements Runnable {
 
 ### 5.2 Balise
 
+La balise est un élément mobile auquel on rajoute le comportement de collecte de données.
+
 **Cycle de vie** :
 1. **Phase de collecte** : Plongée et collecte de données sous-marines
 2. **Phase de remontée** : Remontée à la surface quand la mémoire est pleine
@@ -297,11 +312,11 @@ public void onSyncAsked(AskSyncEvent event) {
 
 ### 5.4 Configuration
 
-**Paramètres système** :
+**Paramètres par défaut** :
 - **Dimensions** : Fenêtre (1280x720), niveau mer (360px)
-- **Données** : Min (10), Max (30) données par cycle
+- **Données à collecter** : entre Min (10), Max (30) données par cycle de balise
 - **Synchronisation** : Fenêtre (50px), Durée (2000ms)
-- **Animation** : Intervalle mouvement (50ms)
+- **Animation** : Intervalle entre chaque déplacement (50ms)
 - **Vitesses** : Linéaire (4px), Variable (2-5px)
 
 ---
@@ -451,6 +466,8 @@ sim1.stop();
 ---
 
 ## 8. Guide d'utilisation
+
+// TODO modifier : ce n'est pas un guide
 
 ### 8.1 Lancement standard
 
@@ -638,6 +655,8 @@ stateDiagram-v2
 
 ## 10. API détaillée
 
+// TODO donner la javadoc plutot qu'un copier/coller des classes
+
 ### 10.1 Interface Simulation
 
 ```java
@@ -783,6 +802,8 @@ public class SyncRunner {
 
 ## 11. Points d'extension et améliorations futures
 
+// TODO pertinent ?
+
 ### 11.1 Extensions possibles
 
 1. **Nouvelles stratégies de déplacement**
@@ -831,7 +852,7 @@ Le projet **Satellites et Balises** représente une implémentation sophistiqué
 
 Les points forts du projet incluent :
 - **Architecture MVC** claire et bien structurée
-- **Patterns de conception** utilisés à bon escient (Strategy, Observer, Factory, Command, Visitor)
+- **Patterns de conception** utilisés à bon escient (Strategy, Observer, Visitor)
 - **Multithreading** robuste avec gestion de la concurrence
 - **Interpréteur de commandes** flexible basé sur ANTLR
 - **Double mode** de visualisation (GUI/Headless)
