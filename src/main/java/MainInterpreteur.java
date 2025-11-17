@@ -13,7 +13,7 @@ public class MainInterpreteur {
         System.out.println("------------------------------------");
 
         Scanner scanner = new Scanner(System.in);
-        SimulationVisitor visitor = new SimulationVisitor("java.awt");
+        SimulationVisitor visitor = new SimulationVisitor();
 
         while (true) {
             System.out.print("> "); // prompt
