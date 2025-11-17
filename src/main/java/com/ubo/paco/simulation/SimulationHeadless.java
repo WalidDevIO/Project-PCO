@@ -84,6 +84,7 @@ public class SimulationHeadless implements Simulation {
     @Override
     public void start() {
         if(running) return;
+        running = true;
         for(Satellite s : satellites) s.start();
         for(Balise b : balises) b.start();
     }
@@ -91,6 +92,7 @@ public class SimulationHeadless implements Simulation {
     @Override
     public void stop() {
         if(!running) return;
+        running = false;
         for(Satellite s : satellites) s.stop();
         for(Balise b : balises) b.stop();
     }
