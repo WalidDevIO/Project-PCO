@@ -5,6 +5,10 @@ import com.ubo.paco.events.StartSyncEvent;
 import com.ubo.paco.events.MoveEvent;
 import com.ubo.paco.events.ViewEventReceiver;
 
+/**
+ * Représentation headless (lignes de logs) d'un élément mobile.
+ * La position de l'élément est affichée à intervalle régulier dans les logs.
+ */
 public class ViewHeadless implements ViewEventReceiver {
 
     int tickCount = 0;

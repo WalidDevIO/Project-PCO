@@ -15,6 +15,9 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Simulation headless : représente l'état de la simulation par des lignes de logs
+ */
 public class SimulationHeadless implements Simulation {
     private List<Satellite> satellites = new ArrayList<>();
     private List<Balise> balises = new ArrayList<>();

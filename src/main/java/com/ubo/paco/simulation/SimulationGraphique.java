@@ -17,6 +17,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+/**
+ * Simulation graphique : les satellites et les balises sont affichés dans une fenêtre
+ */
 public class SimulationGraphique implements Simulation {
     private Config config = new DefaultConfig();
 

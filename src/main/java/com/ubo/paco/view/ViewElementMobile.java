@@ -10,6 +10,9 @@ import com.ubo.paco.events.ViewEventReceiver;
 
 import java.awt.*;
 
+/**
+ * Représentation graphique d'un élément mobile
+ */
 public class ViewElementMobile extends NiRectangle implements ViewEventReceiver {
     private Component component;
     private Component syncComponent;
