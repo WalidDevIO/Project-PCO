@@ -1,7 +1,5 @@
 
 
-sat1.start() ;
-sat1.stop();
 
 
 sim1 := new SimulationGraphique() ;
@@ -14,3 +12,15 @@ sim1.start();
 sat1 := sim1.createSatellite(x=100, y=100);
 
 b1 := sim1.createBalise(x=100, y=500, deplacement="horizontal");
+
+
+sat1.start() ;
+sat1.stop();
+
+b1.start() ;
+b1.stop();
+
+sim1.stop() ;
+sim1.start() ;
+sim1.show() ;
+sim1.close() ;
