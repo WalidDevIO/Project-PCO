@@ -1,27 +1,5 @@
 
 
-sim := new Simulation() ;
-
-
-//sim.generateSatellites(count = 5) ;
-//sim.generateBalises(count = 10) ;
-
-sim.startSimulation() ;
-
-
-
-
-config := new DefaultConfig() ;
-point := new Point(x=100,y=100) ;
-deplacement := new DeplacementHorizontal(speed=5, config=config);
-
-sat1 := new Satellite (deplacement=horizontal, point=point, config=config) ;
-
-sim.addSatellite (satellite=sat1);
-
-sim.r() ;
-
-
 sat1.start() ;
 sat1.stop();
 
@@ -35,4 +13,4 @@ sim1.start();
 
 sat1 := sim1.createSatellite(x=100, y=100);
 
-b1 := sim1.createBalise(x=100, y=100, deplacement="horizontal");
+b1 := sim1.createBalise(x=100, y=500, deplacement="horizontal");
