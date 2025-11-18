@@ -1,7 +1,5 @@
 # Documentation Complète - Projet Satellites et Balises
 
-// TODO : convertir les diagrammes mermaid en images
-
 ## Table des matières
 1. [Vue d'ensemble du projet](#vue-densemble-du-projet)
 2. [Architecture générale](#architecture-générale)
@@ -12,7 +10,7 @@
 7. [Interpréteur de commandes](#interpréteur-de-commandes)
 8. [Guide d'utilisation](#guide-dutilisation)
 9. [Diagrammes UML](#diagrammes-uml)
-10. [API détaillée](#api-détaillée)
+10. [Conclusion](#conclusion)
 
 ---
 
@@ -465,10 +463,7 @@ sim1.stop();
 
 ---
 
-## 8. Guide d'utilisation
-
-// TODO modifier : ce n'est pas un guide
-
+## 8. Examples d'usage
 ### 8.1 Lancement standard
 
 ```java
@@ -653,200 +648,7 @@ stateDiagram-v2
 
 ---
 
-## 10. API détaillée
-
-// TODO donner la javadoc plutot qu'un copier/coller des classes
-
-### 10.1 Interface Simulation
-
-```java
-public interface Simulation {
-    /**
-     * Crée un satellite dans la simulation
-     * @param x Position horizontale initiale
-     * @param y Position verticale initiale (altitude)
-     * @return Instance du satellite créé
-     */
-    Satellite createSatellite(int x, int y);
-    
-    /**
-     * Crée une balise dans la simulation
-     * @param x Position horizontale initiale
-     * @param y Position verticale initiale (profondeur)
-     * @param deplacement Type de déplacement ("horizontal", "sinusoidal", "immobile", "autonome")
-     * @return Instance de la balise créée
-     */
-    Balise createBalise(int x, int y, String deplacement);
-    
-    /**
-     * Démarre tous les éléments de la simulation
-     */
-    void start();
-    
-    /**
-     * Arrête tous les éléments de la simulation
-     */
-    void stop();
-    
-    /**
-     * Vérifie l'état d'exécution
-     * @return true si la simulation est en cours
-     */
-    boolean isRunning();
-}
-```
-
-### 10.2 Configuration système
-
-```java
-public abstract class Config {
-    // Dimensions
-    public abstract int getWinWidth();        // 1280px
-    public abstract int getWinHeight();       // 720px
-    public abstract int getSeaLevel();        // 360px
-    
-    // Données
-    public abstract int getMaxData();         // 30
-    public abstract int getMinData();         // 10
-    
-    // Synchronisation
-    public abstract int getSyncWindowSize();  // 50px
-    public abstract int getSyncDurationMs();  // 2000ms
-    
-    // Animation
-    public abstract int getMovementIntervalMs();      // 50ms
-    public abstract int getDataCollectionFrequency(); // 10 ticks
-    
-    // Vitesses
-    public abstract int getLinearMovementSpeed();     // 4px
-    public abstract int getRandomSpeed();             // 2-5px
-    
-    // Environnement
-    public abstract int getSeaThreshold();            // 50px
-    
-    // Factory
-    public abstract Deplacement getBaliseRandomDeplacementStrategy(Point gpsLoc);
-}
-```
-
-### 10.3 Système d'événements
-
-```java
-// Types d'événements
-public abstract class AbstractEvent extends EventObject {
-    public abstract void sendTo(Object target);
-}
-
-// Gestionnaire d'événements
-public class EventHandler {
-    public void send(AbstractEvent event);
-    public void registerListener(Class<? extends AbstractEvent> eventType, Object listener);
-    public void unregisterListener(Class<? extends AbstractEvent> eventType, Object listener);
-}
-
-// Interface pour les vues
-public interface ViewEventReceiver {
-    void onMove(MoveEvent event);
-    void onSyncStart(StartSyncEvent event);
-    void onSyncEnd(EndSyncEvent event);
-}
-```
-
-### 10.4 Stratégies de déplacement
-
-```java
-// Classe abstraite
-public abstract class Deplacement {
-    protected int speed;
-    protected Config config;
-    
-    public Deplacement(int speed, Config config);
-    public abstract void bouge(ElementMobile elementMobile);
-    public boolean isDone();
-}
-
-// Implémentations disponibles
-DeplacementHorizontal    // Mouvement horizontal avec wrap
-DeplacementSinusoide     // Mouvement sinusoïdal
-DeplacementImmobile      // Pas de mouvement
-DeplacementDescente      // Descente verticale
-DeplacementRemontee      // Remontée à la surface
-DeplacementAutonome      // Changement dynamique de stratégie
-```
-
-### 10.5 Multithreading
-
-```java
-public class SyncRunner {
-    private final ExecutorService executor;
-    
-    /**
-     * Soumet une synchronisation si l'élément n'est pas déjà en sync
-     * @return true si la synchronisation a été soumise
-     */
-    public boolean submitSync(ElementMobile em);
-    
-    /**
-     * Synchronise deux éléments mobiles
-     */
-    public void synchronize(ElementMobile a, ElementMobile b);
-    
-    /**
-     * Arrête proprement l'executor
-     */
-    public void shutdown();
-}
-```
-
----
-
-## 11. Points d'extension et améliorations futures
-
-// TODO pertinent ?
-
-### 11.1 Extensions possibles
-
-1. **Nouvelles stratégies de déplacement**
-   - Déplacement en spirale
-   - Déplacement aléatoire
-   - Déplacement guidé par les courants
-
-2. **Types de données collectées**
-   - Température
-   - Salinité
-   - Pression
-   - Luminosité
-
-3. **Communication avancée**
-   - Priorités de transmission
-   - Compression des données
-   - Communications multi-satellites
-
-4. **Visualisation améliorée**
-   - Graphiques temps réel
-   - Heatmap des zones explorées
-   - Statistiques de collecte
-
-### 11.2 Optimisations possibles
-
-1. **Performance**
-   - Pool de threads optimisé
-   - Batch processing des événements
-   - Lazy loading des composants graphiques
-
-2. **Mémoire**
-   - Recyclage des événements
-   - Compression des données historiques
-   - Garbage collection optimisée
-
-3. **Scalabilité**
-   - Support de milliers d'éléments
-   - Distribution sur plusieurs machines
-   - Sauvegarde/restauration de l'état
-
----
-
-## 12. Conclusion
+## 10. Conclusion
 
 Le projet **Satellites et Balises** représente une implémentation sophistiquée d'une simulation temps réel utilisant les meilleures pratiques de conception orientée objet. L'architecture modulaire, l'utilisation judicieuse des design patterns et la séparation claire des responsabilités permettent une maintenance facile et des extensions futures sans impact majeur sur le code existant.
 
@@ -858,4 +660,4 @@ Les points forts du projet incluent :
 - **Double mode** de visualisation (GUI/Headless)
 - **Configuration** centralisée et extensible
 
-Le système est prêt pour la production et peut facilement être étendu pour supporter de nouvelles fonctionnalités selon les besoins futurs de l'entreprise d'océanographie.
+Le système est prêt pour la production et peut facilement être étendu pour supporter de nouvelles fonctionnalités.
