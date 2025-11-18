@@ -56,3 +56,7 @@ tasks.test {
     useJUnitPlatform()
 }
 
+tasks.withType<Javadoc> {
+    options.encoding = "UTF-8"
+    destinationDir = file("docs/javadoc")
+}

@@ -1,0 +1,14 @@
+unnamed package
+com.ubo.paco.config
+com.ubo.paco.deplacement
+com.ubo.paco.events
+com.ubo.paco.graphicsElement
+com.ubo.paco.graphicsElement.PositionStrategy
+com.ubo.paco.interpreteur
+com.ubo.paco.model
+com.ubo.paco.model.baliseprogram
+com.ubo.paco.simulation
+com.ubo.paco.ThreadRunner
+com.ubo.paco.view
+nicellipse.component
+simulation.antlr4

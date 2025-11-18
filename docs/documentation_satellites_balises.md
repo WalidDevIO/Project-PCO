@@ -661,3 +661,4 @@ Les points forts du projet incluent :
 - **Configuration** centralisée et extensible
 
 Le système est prêt pour la production et peut facilement être étendu pour supporter de nouvelles fonctionnalités.
+[JavaDoc](javadoc/index.html)
