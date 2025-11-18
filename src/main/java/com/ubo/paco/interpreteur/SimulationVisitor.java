@@ -5,23 +5,66 @@ import java.util.*;
 import simulation.antlr4.*;
 import io.github.classgraph.*;
 
+
+/**
+ * Interpréteur dynamique de programmes SatelliteLang basé sur un visiteur ANTLR.
+ * <p>
+ * Cette classe exécute un programme SatelliteLang en utilisant la réflexion Java :
+ * <ul>
+ *   <li>Gestion des variables et de leur environnement</li>
+ *   <li>Appels dynamiques de méthodes sur des objets instanciés</li>
+ *   <li>Recherche automatique des classes dans des packages fournis</li>
+ *   <li>Conversion dynamique des types pour les constructeurs et méthodes</li>
+ * </ul>
+ * Elle permet d'intégrer la logique du langage dans une simulation Java.
+ */
 public class SimulationVisitor extends SatelliteLangBaseVisitor<Object> {
 
+    /**
+     * Liste des packages dans lesquels rechercher des classes instanciables.
+     * Remplie par les paramètres du constructeur + le package interne "com.ubo.paco".
+     */
     private final List<String> allPackages = new ArrayList<>();
+
+    /**
+     * Variables définies dans le programme SatelliteLang.
+     * Le nom de la variable est associé à un objet Java.
+     */
     private final Map<String, Object> variables = new HashMap<>();
 
-    // --- Constructeurs ---
+    /**
+     * Crée un interpréteur en ajoutant une liste variable de packages externes
+     * dans lesquels les classes pourront être recherchées.
+     *
+     * @param externalPackages liste des packages à analyser.
+     */
     public SimulationVisitor(String... externalPackages) {
         this.allPackages.addAll(Arrays.asList(externalPackages));
         this.allPackages.add("com.ubo.paco");
     }
 
+    /**
+     * Crée un interpréteur avec une liste de packages externe.
+     *
+     * @param externalPackages packages supplémentaires pour la résolution des classes.
+     */
     public SimulationVisitor(ArrayList<String> externalPackages) {
         this.allPackages.addAll(externalPackages);
         this.allPackages.add("com.ubo.paco");
     }
 
-    // --- Recherche de classes ---
+    /**
+     * Recherche une classe accessible dans les packages fournis.
+     * La méthode inspecte :
+     * <ol>
+     *     <li>Les classes détectées via ClassGraph (scan du classpath)</li>
+     *     <li>Une tentative directe via {@code Class.forName()}</li>
+     * </ol>
+     *
+     * @param className nom simple de la classe (sans package)
+     * @return la classe correspondante si trouvée
+     * @throws ClassNotFoundException si aucune classe correspondante n'est trouvée
+     */
     public Class<?> findClass(String className) throws ClassNotFoundException {
         try (ScanResult scanResult = new ClassGraph()
                 .enableAllInfo()
@@ -47,7 +90,12 @@ public class SimulationVisitor extends SatelliteLangBaseVisitor<Object> {
         throw new ClassNotFoundException("Classe " + className + " introuvable dans les packages : " + allPackages);
     }
 
-    // --- Programme principal ---
+    /**
+     * Exécute séquentiellement l’ensemble des statements du programme.
+     *
+     * @param ctx contexte ANTLR du programme
+     * @return résultat du dernier statement exécuté
+     */
     @Override
     public Object visitProgram(SatelliteLangParser.ProgramContext ctx) {
         Object result = null;
@@ -56,23 +104,43 @@ public class SimulationVisitor extends SatelliteLangBaseVisitor<Object> {
         }
         return result;
     }
-
+    /**
+     * Exécute un statement d’affectation.
+     *
+     * @param ctx contexte ANTLR
+     * @return valeur assignée
+     */
     @Override
     public Object visitAssignStatement(SatelliteLangParser.AssignStatementContext ctx) {
         return visit(ctx.assignStmt());
     }
-
+    /**
+     * Exécute un statement d'appel de méthode.
+     *
+     * @param ctx contexte ANTLR
+     * @return valeur retournée par la méthode appelée
+     */
     @Override
     public Object visitMethodCallStatement(SatelliteLangParser.MethodCallStatementContext ctx) {
         return visit(ctx.methodCall());
     }
-
+    /**
+     * Ignore les commentaires.
+     *
+     * @param ctx contexte ANTLR
+     * @return toujours {@code null}
+     */
     @Override
     public Object visitCommentStatement(SatelliteLangParser.CommentStatementContext ctx) {
         return null;
     }
 
-    // --- Affectation : var := expr ---
+    /**
+     * Affecte une variable à partir d’une expression.
+     *
+     * @param ctx contexte ANTLR de l'affectation
+     * @return valeur assignée
+     */
     @Override
     public Object visitAssignStmt(SatelliteLangParser.AssignStmtContext ctx) {
         String varName = ctx.ID().getText();
@@ -84,7 +152,14 @@ public class SimulationVisitor extends SatelliteLangBaseVisitor<Object> {
         return value;
     }
 
-    // --- Appel de méthode : obj.method(a=1, b=2) ---
+    /**
+     * Appelle une méthode sur un objet instancié et stocké dans l'environnement.
+     * <p>
+     * La recherche se fait dynamiquement via la réflexion Java.
+     *
+     * @param ctx contexte ANTLR de l'appel de méthode
+     * @return valeur retournée par la méthode, ou {@code null} si void
+     */
     @Override
     public Object visitMethodCall(SatelliteLangParser.MethodCallContext ctx) {
         String varName = ctx.ID(0).getText();
@@ -120,7 +195,12 @@ public class SimulationVisitor extends SatelliteLangBaseVisitor<Object> {
         }
     }
 
-    // --- Expressions ---
+    /**
+     * Évalue une expression (nombre, chaîne, identifiant, appel ou instanciation).
+     *
+     * @param ctx contexte ANTLR de l’expression
+     * @return valeur évaluée
+     */
     @Override
     public Object visitExpr(SatelliteLangParser.ExprContext ctx) {
         if (ctx.NUMBER() != null) {
@@ -150,7 +230,12 @@ public class SimulationVisitor extends SatelliteLangBaseVisitor<Object> {
         throw new RuntimeException("Expression inconnue : " + ctx.getText());
     }
 
-    // --- Instanciation : new ClassName(a=1, b=2) ---
+    /**
+     * Instancie dynamiquement une classe avec ou sans arguments nommés.
+     *
+     * @param ctx contexte ANTLR
+     * @return instance construite
+     */
     @Override
     public Object visitInstantiation(SatelliteLangParser.InstantiationContext ctx) {
         String className = ctx.ID().getText();
@@ -175,7 +260,15 @@ public class SimulationVisitor extends SatelliteLangBaseVisitor<Object> {
         }
     }
 
-    // --- Création d'instances ---
+    /**
+     * Crée une instance en cherchant d'abord un constructeur compatible,
+     * puis en dernier recours en utilisant les setters.
+     *
+     * @param clazz classe à instancier
+     * @param args  arguments nommés du constructeur
+     * @return instance nouvellement créée
+     * @throws Exception si aucune instanciation n'est possible
+     */
     private Object createInstance(Class<?> clazz, Map<String, Object> args) throws Exception {
         if (args.isEmpty()) {
             return clazz.getDeclaredConstructor().newInstance();
@@ -194,7 +287,14 @@ public class SimulationVisitor extends SatelliteLangBaseVisitor<Object> {
 
         return createWithSetters(clazz, args);
     }
-
+    /**
+     * Tente de construire l'objet via les setters si aucun constructeur ne correspond.
+     *
+     * @param clazz classe à instancier
+     * @param args  map d'arguments nommés
+     * @return instance construite
+     * @throws Exception si l'instanciation échoue
+     */
     private Object createWithSetters(Class<?> clazz, Map<String, Object> args) throws Exception {
         Object instance = clazz.getDeclaredConstructor().newInstance();
 
@@ -213,7 +313,16 @@ public class SimulationVisitor extends SatelliteLangBaseVisitor<Object> {
         return instance;
     }
 
-    // --- Invocation dynamique avec conversion de types ---
+    /**
+     * Recherche et invoque dynamiquement une méthode sur un objet cible.
+     * Les arguments sont automatiquement convertis vers les types requis.
+     *
+     * @param target     instance sur laquelle appeler la méthode
+     * @param methodName nom de la méthode
+     * @param args       arguments de l'appel
+     * @return résultat de la méthode invoquée
+     * @throws Exception si aucune méthode compatible n'est trouvée
+     */
     private Object invokeMethod(Object target, String methodName, List<Object> args) throws Exception {
         Class<?> clazz = target.getClass();
         Object[] argArray = args.toArray();
@@ -234,7 +343,15 @@ public class SimulationVisitor extends SatelliteLangBaseVisitor<Object> {
                 " avec " + args.size() + " argument(s) dans " + clazz.getName());
     }
 
-    // --- Conversion automatique des arguments ---
+    /**
+     * Convertit automatiquement les types d’arguments pour qu’ils soient
+     * compatibles avec les paramètres d’une méthode ou d’un constructeur.
+     * Gère notamment les conversions numériques (Double → int, etc.).
+     *
+     * @param paramTypes types attendus
+     * @param args       arguments réels
+     * @return tableau d’arguments convertis ou {@code null} si incompatible
+     */
     private Object[] convertArgs(Class<?>[] paramTypes, Object[] args) {
         Object[] converted = new Object[args.length];
 
@@ -275,21 +392,41 @@ public class SimulationVisitor extends SatelliteLangBaseVisitor<Object> {
 
         return converted;
     }
-
+    /**
+     * Vérifie simplement si un constructeur possède le bon nombre d’arguments.
+     *
+     * @param constructor constructeur à tester
+     * @param args        arguments fournis
+     * @return {@code true} si le nombre correspond
+     */
     private boolean tryConstructor(Constructor<?> constructor, Object[] args) {
         return constructor.getParameterTypes().length == args.length;
     }
-
+    /**
+     * Capitalise la première lettre d’une chaîne (utile pour déduire les setters).
+     *
+     * @param str chaîne à modifier
+     * @return chaîne capitalisée
+     */
     private String capitalize(String str) {
         if (str == null || str.isEmpty()) return str;
         return str.substring(0, 1).toUpperCase() + str.substring(1);
     }
 
-    // --- Accès variables ---
+    /**
+     * Récupère la valeur d’une variable stockée dans l’environnement.
+     *
+     * @param name nom de la variable
+     * @return valeur associée ou {@code null} si absente
+     */
     public Object getVariable(String name) {
         return variables.get(name);
     }
-
+    /**
+     * Retourne une vue non modifiable de toutes les variables.
+     *
+     * @return map immuable des variables
+     */
     public Map<String, Object> getVariables() {
         return Collections.unmodifiableMap(variables);
     }
