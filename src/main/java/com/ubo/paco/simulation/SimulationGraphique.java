@@ -12,7 +12,10 @@ import com.ubo.paco.model.Satellite;
 import com.ubo.paco.view.ViewElementMobile;
 import nicellipse.component.NiSpace;
 
+import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -33,16 +36,22 @@ public class SimulationGraphique implements Simulation {
     private List<Balise> balises = new ArrayList<>();
 
     private boolean running = false;
+    private boolean isCreate = false;
+    private JFrame frame;
 
-    public SimulationGraphique() {}
+    public SimulationGraphique() {
+        this.generateDecors();
+    }
 
     public SimulationGraphique(Config config) {
         this.config = config;
+        this.generateDecors();
     }
 
     public SimulationGraphique(Config config, NiSpace space) {
         this.config = config;
         this.space = space;
+        this.generateDecors();
     }
 
     int random(int min, int max){
@@ -124,9 +133,6 @@ public class SimulationGraphique implements Simulation {
     @Override
     public void start() {
         if(!initialized) {
-            space.openInWindow();
-            this.generateDecors();
-            space.repaint();
             initialized = true;
         }
 
@@ -142,6 +148,32 @@ public class SimulationGraphique implements Simulation {
         running = false;
         for(Satellite s : satellites) s.stop();
         for(Balise b : balises) b.stop();
+    }
+
+    public void show(){
+        if (frame == null) {
+            frame = new JFrame("PACO Simulation");
+
+            frame.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosing(WindowEvent e) {
+                    frame.dispose();
+                }
+            });
+
+            frame.getContentPane().add(this.space);
+            frame.pack();
+        }
+
+        frame.setVisible(true);
+        this.space.requestFocus();
+    }
+
+    public void close(){
+        if (frame != null) {
+            frame.setVisible(false);
+            frame.dispose();
+        }
     }
 
     @Override
